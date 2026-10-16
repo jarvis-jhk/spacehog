@@ -12,5 +12,6 @@ Working log for things Jan does not need to see. Newest first.
 - CI added (`ci.yml`, `release.yml`, `scripts/ci-build.sh`); release binaries come from CI.
   Release flow: run regress.sh in a worker → create the GitHub release with notes
   ("regression set passed") → push the `v*` tag → release.yml attaches the files.
+- v0.1.1 released from CI (first CI release; assets checked: checksums, Linux binary runs headless).
 - Open: Warpzone integration (netplay, leaderboards, mods), Deck defaults, fault reports,
-  lane schedules/JARVIS.md entry (asked the `self` lane).
+  lane schedules/JARVIS.md entry (asked the `self` lane, t_mvb3f9ed0ut3y).
