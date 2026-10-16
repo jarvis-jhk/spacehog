@@ -19,7 +19,7 @@ done
 OUT=${DIFFTEST_OUT:-$ROOT/scratch/difftest}
 rm -rf "$OUT"; mkdir -p "$OUT/port_save" "$OUT/emu_save"
 [ -n "$SAV" ] && cp "$SAV" "$OUT/port_save/SPACEHOG.SAV" && cp "$SAV" "$OUT/emu_save/SPACEHOG.SAV"
-"$ROOT/build/spacehog" --data "$ROOT/orig/dist/game" --save-dir "$OUT/port_save" --headless --fast \
+"$SH_BUILD/spacehog" --data "$ROOT/orig/dist/game" --save-dir "$OUT/port_save" --headless --fast \
    --replay "$REPLAY" --sync-log "$OUT/port.sync" ${DUMP:+--sync-dump $DUMP} "$@" >"$OUT/port.out" 2>&1 || true
 GAMEARGS=(); for a in "$@"; do GAMEARGS+=(--arg "$a"); done
 python3 "$ROOT/re/refemu/refemu.py" "$OUT/port.sync" --save-dir "$OUT/emu_save" "${EMUOPT[@]}" "${GAMEARGS[@]}"

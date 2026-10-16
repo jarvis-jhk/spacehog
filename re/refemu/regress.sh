@@ -2,6 +2,7 @@
 # Regression set for refactoring: full game (with /judge cheats) + a few fuzz replays,
 # all against the emulated original, in parallel. Prints one line per run.
 # usage: [REFEMU_OPTS=--pixels] re/refemu/regress.sh [MORE_SEEDS...]
+# Exits non-zero if any run diverges.
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 source "$ROOT/tools/env.sh"
 OUT=$ROOT/scratch/regress
@@ -31,3 +32,7 @@ run names "$OUT/names.rec" --sav "$OUT/low.sav" &
 python3 "$ROOT/re/refemu/fuzzrec.py" "$OUT/easy.rec" --seed 7 --minutes 6 --players 2
 run easy "$OUT/easy.rec" --sav "$OUT/easy.sav" &
 wait
+# exit status: 0 only if every run reached its end without a divergence
+fail=0
+for f in "$OUT"/*.txt; do grep -q '^\[refemu\].*no divergence' "$f" || { echo "FAILED: $(basename "$f" .txt)"; fail=1; }; done
+exit $fail

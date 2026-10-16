@@ -1,0 +1,22 @@
+name: Build dependencies
+description: apt packages, ninja and the cached SDL3/llvm-mingw downloads
+inputs:
+  os: {required: true}
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq ninja-build
+        if [ "${{ inputs.os }}" = linux ]; then
+          sudo apt-get install -y -qq libx11-dev libxext-dev libxrandr-dev libxcursor-dev \
+            libxi-dev libxfixes-dev libxss-dev libxtst-dev libxkbcommon-dev libwayland-dev \
+            wayland-protocols libegl-dev libgl-dev libgles-dev libdrm-dev libgbm-dev \
+            libdecor-0-dev libpulse-dev libasound2-dev libpipewire-0.3-dev libudev-dev \
+            libdbus-1-dev libibus-1.0-dev
+        fi
+    - uses: actions/cache@v4
+      with:
+        path: ci-cache
+        key: deps-${{ inputs.os }}-${{ hashFiles('scripts/ci-build.sh') }}

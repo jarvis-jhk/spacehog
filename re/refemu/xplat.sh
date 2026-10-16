@@ -9,7 +9,7 @@ REPLAY=${1:-$ROOT/re/refemu/replays/fullgame_judge.rec}; shift
 [ $# -eq 0 ] && [ -z "$2" ] && set -- /judge
 OUT=$ROOT/scratch/xplat; rm -rf "$OUT"; mkdir -p "$OUT/lin" "$OUT/win"
 w() { echo "Z:$(realpath "$1" | sed 's|/|\\|g')"; }
-"$ROOT/build/spacehog" "$@" --data "$ROOT/orig/dist/game" --save-dir "$OUT/lin" --headless --fast \
+"$SH_BUILD/spacehog" "$@" --data "$ROOT/orig/dist/game" --save-dir "$OUT/lin" --headless --fast \
    --replay "$REPLAY" --sync-log "$OUT/lin.sync" >/dev/null 2>&1
 WINEDLLOVERRIDES="mscoree,mshtml=" wine "$ROOT/build-win/spacehog.exe" "$@" --data "$(w "$ROOT/orig/dist/game")" \
    --save-dir "$(w "$OUT/win")" --headless --fast --replay "$(w "$REPLAY")" --sync-log "$(w "$OUT")\\win.sync" >/dev/null 2>&1

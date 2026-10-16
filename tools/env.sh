@@ -9,4 +9,12 @@ export TMPDIR="$SH_ROOT/scratch/tmp"; mkdir -p "$TMPDIR"
 export JAVA_HOME="$T/jdk-21.0.12.1+1"
 export JAVA_TOOL_OPTIONS="-Duser.home=$HOME -Djava.io.tmpdir=$TMPDIR"
 export WINEPREFIX="$T/wineprefix" WINEDEBUG=-all
-export PATH="$T/bin:$T/venv/bin:$T/cmake-4.4.4-linux-x86_64/bin:$T/llvm-mingw-20261006-ucrt-ubuntu-22.04-x86_64/bin:$T/wine-11.19-amd64/bin:$JAVA_HOME/bin:$PATH"
+# Laptop: tools/venv + build/ + tools/sdl3-linux. JARVIS workers (other Python, no X11
+# headers): tools/venv-worker + build-w/ + tools/sdl3-worker (headless SDL3 only).
+SH_VENV=$T/venv SH_BUILD=${SH_BUILD:-$SH_ROOT/build} SH_SDL3=$T/sdl3-linux
+if [ -x "$T/venv-worker/bin/python3" ] && ! grep -qx "version = $(python3 -c 'import platform; print(platform.python_version())' 2>/dev/null)" "$T/venv/pyvenv.cfg" 2>/dev/null; then
+   SH_VENV=$T/venv-worker SH_SDL3=$T/sdl3-worker
+   [ "$SH_BUILD" = "$SH_ROOT/build" ] && SH_BUILD=$SH_ROOT/build-w
+fi
+export SH_VENV SH_BUILD SH_SDL3
+export PATH="$T/bin:$SH_VENV/bin:$T/cmake-4.4.4-linux-x86_64/bin:$T/llvm-mingw-20261006-ucrt-ubuntu-22.04-x86_64/bin:$T/wine-11.19-amd64/bin:$JAVA_HOME/bin:$PATH"

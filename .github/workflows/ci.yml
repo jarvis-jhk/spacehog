@@ -1,0 +1,25 @@
+name: CI
+on:
+  push:
+    branches: ['**']
+    tags-ignore: ['v*']
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [linux, windows]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: ./.github/actions/deps
+        with: {os: '${{ matrix.os }}'}
+      - run: scripts/ci-build.sh ${{ matrix.os }} "$(git describe --tags --always)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: spacehog-${{ matrix.os }}-x86_64
+          path: dist/spacehog-${{ matrix.os }}-x86_64.*
+          retention-days: 14
