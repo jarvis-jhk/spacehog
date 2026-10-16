@@ -1,0 +1,8 @@
+# addr	len	what (memory written by interrupt handlers; decompiler must not cache it)
+000a5f08	4	g_tick
+000cce08	4	g_fps
+000cce10	4	g_frames
+000cf9dc	128	key[]
+000cfa5c	0x118	joy[]
+00074750	12	mouse_x, mouse_y, mouse_b
+00074dd0	8	keybuf start/end

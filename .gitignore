@@ -1,0 +1,17 @@
+# Original game files (copyrighted, never commit)
+/orig/
+# Local toolchain (see tools/fetch.sh)
+/tools/*
+!/tools/env.sh
+!/tools/fetch.sh
+!/tools/urls.txt
+/re/allegro311/
+/build*/
+/scratch/
+/re/ghidra/proj/
+/re/ghidra/out/
+!/tools/build-sdl3.sh
+/build*/
+!/tools/build-sdl3-win.sh
+__pycache__/
+/dist/

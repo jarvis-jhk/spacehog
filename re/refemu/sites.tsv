@@ -1,0 +1,44 @@
+# Busy-wait sites in the original: address (the point where the port calls wait_tick(),
+# i.e. usually the loop back-edge) and the sync record kind consumed there.
+0060c4	i	# sh_setup: wait for SPACE on the setup screen
+01eb84	i	# intro_wait (0x1eb4c)
+01f21c	i	# intro (0x1ee3c) frame wait
+01f3a8	i	# intro (0x1ee3c) frame wait
+01f570	i	# intro (0x1ee3c) frame wait
+01f734	i	# intro (0x1ee3c) frame wait
+01f914	i	# intro (0x1ee3c) frame wait
+01fd14	i	# intro (0x1ee3c) frame wait
+01fee8	i	# intro (0x1ee3c) frame wait
+0200d4	i	# intro (0x1ee3c) frame wait
+0202ec	i	# intro (0x1ee3c) frame wait
+01ed30	i	# intro_type (0x1eb90) frame wait
+0242e1	i	# title_menu (0x23b5c) end of loop
+011120	i	# f10df0 dialog: wait for fire (body start)
+011288	i	# f10df0 dialog: wait for ESC release
+0112a4	i	# f10df0 dialog: wait for ESC/ENTER (body start)
+0112f8	i	# f10df0 dialog: wait for ESC release
+01170c	i	# f11438 ship select: while (!g_tick)
+011b2c	i	# f11438 ship select: while (!g_tick)
+01cda0	i	# f1ccd8 pause: wait for PAUSE press
+01cdb0	i	# f1ccd8 pause: wait for PAUSE release
+01d05c	i	# f1ce08 level end tally: while (g_tick < 10) body
+01d144	i	# f1ce08 level end tally
+01d2f4	i	# f1ce08 level end tally
+01d460	i	# f1ce08 level end tally
+01d53c	i	# f1ce08 level end: wait for fire (body start)
+020bd5	i	# f2063c launch: tick wait (after g_tick test, before TAB test)
+0218a1	i	# f2063c launch: tick wait
+0236bd	i	# f21a7c main loop: end-of-tick wait (after g_tick test, before TAB test)
+01f220	p?15	# frame_wait exit: port calls sys_poll() while TAB is held
+01f3ac	p?15	# frame_wait exit: port calls sys_poll() while TAB is held
+01f574	p?15	# frame_wait exit: port calls sys_poll() while TAB is held
+01f738	p?15	# frame_wait exit: port calls sys_poll() while TAB is held
+01f918	p?15	# frame_wait exit: port calls sys_poll() while TAB is held
+01fd18	p?15	# frame_wait exit: port calls sys_poll() while TAB is held
+01feec	p?15	# frame_wait exit: port calls sys_poll() while TAB is held
+0200d8	p?15	# frame_wait exit: port calls sys_poll() while TAB is held
+0202f0	p?15	# frame_wait exit: port calls sys_poll() while TAB is held
+01ed34	p?15	# frame_wait exit: port calls sys_poll() while TAB is held
+01e728	i	# credits (0x1e614): while (!g_tick)
+01b3f8	i	# hall_of_fame (0x1b088): while (!g_tick)
+01ba4e	i	# game_over (0x1b89c): end of loop body, before the condition

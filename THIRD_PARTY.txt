@@ -1,0 +1,48 @@
+Third-party code in this program
+================================
+
+Nuked OPL3 (src/third_party/nuked_opl3) - OPL3 emulator
+   Copyright (C) 2013-2020 Nuke.YKT
+   GNU Lesser General Public License 2.1 or later, see src/third_party/nuked_opl3/LICENSE.
+   The complete source of this program is available, so the OPL3 emulator can be
+   replaced by a modified version and the program relinked.
+
+TinySoundFont (src/third_party/tsf) - SoundFont2 synthesizer, optional General MIDI music
+   Copyright (C) 2017-2025 Bernhard Schelling, based on SFZero (C) 2012 Steve Folta
+   MIT license (full text at the top of tsf.h)
+
+Allegro 3.11 (parts of src/compat: midi_player.c, adlib.c, fm_instr.h, and the
+behaviour of the drawing code) - Shawn Hargreaves and the Allegro contributors
+   Allegro is gift-ware. It was created by a number of people working in
+   cooperation, and is given to you freely as a gift. You may use, modify,
+   redistribute, and generally hack it about in any way you like, and you do
+   not have to give us anything in return. However, if you like this product
+   you are encouraged to thank us by making a return gift to the Allegro
+   community. This could be by writing an add-on package, providing a useful
+   bug report, making an improvement to the library, or perhaps just
+   releasing the sources of your program so that other people can learn from
+   them. If you redistribute parts of this code or make a game using it, it
+   would be nice if you mentioned Allegro somewhere in the credits, but you
+   are not required to do this. We trust you not to abuse our generosity.
+
+SDL 3 (statically linked) - https://libsdl.org
+   Copyright (C) 1997-2026 Sam Lantinga <slouken@libsdl.org>
+     
+   This software is provided 'as-is', without any express or implied
+   warranty.  In no event will the authors be held liable for any damages
+   arising from the use of this software.
+   
+   Permission is granted to anyone to use this software for any purpose,
+   including commercial applications, and to alter it and redistribute it
+   freely, subject to the following restrictions:
+     
+   1. The origin of this software must not be misrepresented; you must not
+      claim that you wrote the original software. If you use this software
+      in a product, an acknowledgment in the product documentation would be
+      appreciated but is not required. 
+   2. Altered source versions must be plainly marked as such, and must not be
+      misrepresented as being the original software.
+   3. This notice may not be removed or altered from any source distribution.
+
+Operation Spacehog (the game this program runs) is (c) Free Lunch Design, freeware.
+Its data files are not part of this program.

@@ -1,0 +1,157 @@
+# addr	name	prototype (optional). Re-applied by re/ghidra/reanalyze.sh
+# ---- game ----
+0000582c	sh_setup	void sh_setup(void)
+# ---- Allegro 3.11 ----
+00028684	install_allegro_detect
+00028ab4	allegro_exit	void allegro_exit(void)
+000290ac	set_gfx_mode	int set_gfx_mode(int card, int w, int h, int v_w, int v_h)
+0002957c	_make_bitmap	BITMAP * _make_bitmap(int w, int h, unsigned long addr, void * driver, int color_depth, int bpl)
+000299bc	create_bitmap	BITMAP * create_bitmap(int width, int height)
+000299dc	create_sub_bitmap	BITMAP * create_sub_bitmap(BITMAP * parent, int x, int y, int width, int height)
+00029dfc	destroy_bitmap	void destroy_bitmap(BITMAP * bitmap)
+00029ecc	set_clip	void set_clip(BITMAP * bitmap, int x1, int y1, int x2, int y2)
+0002a3d0	drawing_mode	void drawing_mode(int mode, BITMAP * pattern, int x_anchor, int y_anchor)
+0002a640	solid_mode	void solid_mode(void)
+0002a690	clear	void clear(BITMAP * bitmap)
+0002a6d0	set_pallete	void set_pallete(RGB * p)
+0002a910	get_pallete	void get_pallete(RGB * p)
+0002adf0	fade_from	void fade_from(RGB * source, RGB * dest, int speed)
+0002ae10	fade_in	void fade_in(RGB * p, int speed)
+0002ae30	fade_out	void fade_out(int speed)
+0002ae80	rect	void rect(BITMAP * bmp, int x1, int y1, int x2, int y2, int color)
+0002b6a0	circle	void circle(BITMAP * bmp, int x, int y, int radius, int color)
+0002b920	circlefill	void circlefill(BITMAP * bmp, int x, int y, int radius, int color)
+0002cf7c	save_pcx	int save_pcx(char * filename, BITMAP * bmp, RGB * pal)
+0002d61c	bitmap_color_depth	int bitmap_color_depth(BITMAP * bmp)
+0002d62c	bitmap_mask_color	int bitmap_mask_color(BITMAP * bmp)
+0002d71c	vsync	void vsync(void)
+0002da4c	putpixel	void putpixel(BITMAP * bmp, int x, int y, int color)
+0002dadc	line	void line(BITMAP * bmp, int x1, int y1, int x2, int y2, int color)
+0002db1c	rectfill	void rectfill(BITMAP * bmp, int x1, int y1, int x2, int y2, int color)
+0002db5c	draw_sprite	void draw_sprite(BITMAP * bmp, BITMAP * sprite, int x, int y)
+0002dc5c	draw_lit_sprite	void draw_lit_sprite(BITMAP * bmp, BITMAP * sprite, int x, int y, int color)
+0002dc8c	draw_character	void draw_character(BITMAP * bmp, BITMAP * sprite, int x, int y, int color)
+0002dcbc	draw_rle_sprite	void draw_rle_sprite(BITMAP * bmp, RLE_SPRITE * sprite, int x, int y)
+0002dd1c	draw_lit_rle_sprite	void draw_lit_rle_sprite(BITMAP * bmp, RLE_SPRITE * sprite, int x, int y, int color)
+0002dd4c	clear_to_color	void clear_to_color(BITMAP * bmp, int color)
+0002dd8c	_putpixel	void _putpixel(BITMAP * bmp, int x, int y, unsigned char color)
+0002ddbc	_getpixel	unsigned char _getpixel(BITMAP * bmp, int x, int y)
+0002de7c	itofix	fixed itofix(int x)
+0002de8c	fixtoi	int fixtoi(fixed x)
+0002dfac	fcos	fixed fcos(fixed x)
+0002dfcc	fsin	fixed fsin(fixed x)
+0002e0ec	fmul	fixed fmul(fixed x, fixed y)
+0002e12c	fdiv	fixed fdiv(fixed x, fixed y)
+0002e964	rotate_sprite	void rotate_sprite(BITMAP * bmp, BITMAP * sprite, int x, int y, fixed angle)
+0002e994	rotate_scaled_sprite	void rotate_scaled_sprite(BITMAP * bmp, BITMAP * sprite, int x, int y, fixed angle, fixed scale)
+0002f3e4	get_rle_sprite	RLE_SPRITE * get_rle_sprite(BITMAP * bitmap)
+000326dc	load_datafile	DATAFILE * load_datafile(char * filename)
+00032a3c	unload_datafile	void unload_datafile(DATAFILE * dat)
+000335c8	install_sound	int install_sound(int digi_card, int midi_card, char * cfg_path)
+00034348	set_volume	void set_volume(int digi_volume, int midi_volume)
+00034d88	play_sample	int play_sample(SAMPLE * spl, int vol, int pan, int freq, int loop)
+00034e38	adjust_sample	void adjust_sample(SAMPLE * spl, int vol, int pan, int freq, int loop)
+00034ee8	stop_sample	void stop_sample(SAMPLE * spl)
+000371bc	delete_file	int delete_file(char * filename)
+0003747c	packfile_password	void packfile_password(char * password)
+0003ab34	install_mouse	int install_mouse(void)
+0003b5b8	rest	void rest(long time)
+0003b788	install_int_ex	int install_int_ex(void * proc, long speed)
+0003b898	install_int	int install_int(void * proc, long speed)
+0003b928	install_timer	int install_timer(void)
+0003bdec	clear_keybuf	void clear_keybuf(void)
+0003be8c	readkey	int readkey(void)
+0003d4dc	install_keyboard	int install_keyboard(void)
+0003e850	poll_joystick	int poll_joystick(void)
+0003ea90	install_joystick	int install_joystick(int type)
+0003fa64	create_rgb_table	void create_rgb_table(void * table, RGB * pal, void * callback)
+00040d74	create_light_table	void create_light_table(void * table, RGB * pal, int r, int g, int b, void * callback)
+000412ec	text_mode	void text_mode(int mode)
+0004131c	textout	void textout(BITMAP * bmp, FONT * f, char * str, int x, int y, int color)
+0004144c	textout_centre	void textout_centre(BITMAP * bmp, FONT * f, char * str, int x, int y, int color)
+000419ec	textprintf	void textprintf(BITMAP * bmp, FONT * f, int x, int y, int color, char * format, ...)
+00041b6c	textprintf_centre	void textprintf_centre(BITMAP * bmp, FONT * f, int x, int y, int color, char * format, ...)
+00041d0c	text_length	int text_length(FONT * f, char * str)
+000425c8	blit	void blit(BITMAP * source, BITMAP * dest, int source_x, int source_y, int dest_x, int dest_y, int width, int height)
+00042e8c	load_midi_x
+000430ec	destroy_midi	void destroy_midi(MIDI * midi)
+00044acc	play_midi	int play_midi(MIDI * midi, int loop)
+00044c8c	stop_midi	void stop_midi(void)
+00044cac	midi_pause	void midi_pause(void)
+00044d8c	midi_resume	void midi_resume(void)
+00047104	stretch_sprite	void stretch_sprite(BITMAP * bmp, BITMAP * sprite, int x, int y, int w, int h)
+00047140	fatan	fixed fatan(fixed x)
+00047758	floodfill	void floodfill(BITMAP * bmp, int x, int y, int color)
+00049b6c	allegro_cfg_x
+# ---- DJGPP libc ----
+00067c38	fopen	void * fopen(char * name, char * mode)
+00067d70	fread	int fread(void * buf, int size, int n, void * f)
+00067e9c	fclose	int fclose(void * f)
+00067f48	fwrite	int fwrite(void * buf, int size, int n, void * f)
+0006815c	strcpy	char * strcpy(char * d, char * s)
+00068184	srand	void srand(unsigned int seed)
+000684ac	rand	int rand(void)
+00068538	printf	int printf(char * fmt, ...)
+00068564	fflush	int fflush(void * f)
+000685e4	sprintf	int sprintf(char * buf, char * fmt, ...)
+0006861c	exit	void exit(int code)
+0006876c	gotoxy	void gotoxy(int x, int y)
+000688b4	textcolor	void textcolor(int c)
+000688d8	textbackground	void textbackground(int c)
+000689b0	clreol	void clreol(void)
+00068a98	clrscr	void clrscr(void)
+000690b8	cprintf	int cprintf(char * fmt, ...)
+000697ac	biostime	long biostime(int cmd, long newtime)
+000697e4	_go32_dpmi_lock_data	int _go32_dpmi_lock_data(void * p, int n)
+0006983c	_go32_dpmi_lock_code	int _go32_dpmi_lock_code(void * p, int n)
+00069c84	strlen	int strlen(char * s)
+00069cb0	strcat	char * strcat(char * d, char * s)
+00069d24	int86	int int86(int n, void * in, void * out)
+0006fefc	stricmp	int stricmp(char * a, char * b)
+# ---- game globals ----
+000ae088	g_player	PLAYER[2]
+000ae6c8	g_enemy	ENEMY[50]
+000a5f0c	g_shot	SHOT[200]
+000ae340	g_pickup	PICKUP[10]
+000c8954	g_expl	EXPLOSION[50]
+000cac34	g_ebullet	EBULLET[100]
+000a5348	g_particle	PARTICLE[100]
+000aa088	g_event	LEVELEVENT[256]
+000cf9dc	key	char[128]
+000cc854	dat_spacehog	DATAFILE *
+000ccdfc	dat_shlev	DATAFILE *
+000c8fcc	dat_shbgs	DATAFILE *
+000c8594	dat_shsnd	DATAFILE *
+000a5f08	g_tick
+000cce08	g_fps
+000cce10	g_frames
+000c0408	g_hiscore	HISCORE[10]
+000c8f94	g_keys	int[14]
+000cc858	g_cos128	int[256]
+000ca6f4	g_sin128	int[256]
+00073de8	screen	BITMAP *
+000c8fd0	g_enemy_tmpl	ENEMY[40]
+000caaf4	g_bgobj	BGOBJ[10]
+000a9438	g_star	STAR[255]
+00073bb4	g_launch_path	int[20]
+00073c10	g_lamp_x	int[9]
+00073c58	g_anim	unsigned char[4]
+00073c09	dbg_enemyinfo
+000ccc68	g_wave	WAVE[10]
+000c886c	g_shiptype	SHIPTYPE[3]
+000c8598	g_ebullet_tmpl	EBULLET[5]
+000c88fc	g_levelhdr	LEVELHDR
+00073ae4	g_dir_vx	int[16]
+00073b24	g_dir_vy	int[16]
+00073ad4	g_ship_specials	int[3]
+000ae4fc	bigmissile_rot	BITMAP *[48]
+000ae250	missile_rot	RLE_SPRITE *[16]
+000c8544	expl_small	RLE_SPRITE *[20]
+000ae290	expl_medium	RLE_SPRITE *[42]
+000a5e38	expl_big	RLE_SPRITE *[50]
+000ccc5c	bmp_bar	BITMAP *[2]
+000ae5c0	g_ae5c0	unsigned char[256]
+000ccc58	bmp_world	BITMAP *
+000b03b0	bmp_buf	BITMAP *
+000ccc64	g_title_y
+000ccdf8	g_level
