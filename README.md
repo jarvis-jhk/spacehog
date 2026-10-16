@@ -10,6 +10,8 @@ The game data is **not** included. You need the original freeware release
 [DOS Games Archive](https://www.dosgamesarchive.com/download/operation-spacehog):
 unpack its zip anywhere.
 
+What comes next (online co-op, 4 players, mods, leaderboards): [ROADMAP.md](ROADMAP.md).
+
 ## Download
 
 - **Warpzone launcher** ([warpzone.virtualtabletop.io](https://warpzone.virtualtabletop.io)):
@@ -53,7 +55,8 @@ Needs CMake ≥ 3.20, a C11 compiler and SDL 3 (linked statically).
     cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=/path/to/sdl3
     cmake --build build
 
-`scripts/package.sh` builds release archives for Linux and Windows into `dist/`.
+Release archives are built by CI (`scripts/ci-build.sh`, on ubuntu-22.04 so the Linux
+binary runs with glibc 2.35 or newer); `scripts/package.sh` builds them locally into `dist/`.
 `tools/fetch.sh` and `tools/build-sdl3*.sh` set up a self-contained toolchain in `tools/`
 (static SDL3 for Linux, llvm-mingw + SDL3 for Windows; toolchain file
 `cmake/mingw-w64-x86_64.cmake`). Always `source tools/env.sh` first.
