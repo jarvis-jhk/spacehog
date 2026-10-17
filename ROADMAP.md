@@ -30,8 +30,13 @@ listed in `PLAN.md` and pinned by the differential tests.
    WAV, MID, `.lev`), later the ship/enemy tables as text. Warpzone archive categories:
    level, graphics, ship, sound, music, campaign. No code in mods.
 7. **Steam Deck** — fullscreen and pad defaults when `SteamDeck=1`.
-8. **Fault reports** — crashes reported through a public channel into GitHub issues,
-   no personal data.
+8. **Fault reports** through Warpzone's feedback API (libwarpzone ≥ 0.1.3, game id
+   `spacehog`): caught faults (failed data load, corrupt save/recording, net desync,
+   failed join) via `wz_report(wz, "bug", stable title, detail)`; crashes: the signal
+   handler / `SetUnhandledExceptionFilter` writes title + backtrace to a file in the save
+   dir, the next start sends it with `wz_report_problem(NULL, "spacehog", VERSION,
+   "crash", …)` and deletes it. Stable titles, no personal data. Waiting for the 0.1.3
+   release (launcher-started crashes are already reported by Warpzone itself).
 
 ## Later
 

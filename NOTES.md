@@ -2,6 +2,15 @@
 
 Working log for things Jan does not need to see. Newest first.
 
+## 2026-10-17 — Warpzone fault reports (request t_mvc4357ndehku, from the warpzone lane)
+
+- Valid and wanted (= roadmap item 8), but blocked: needs libwarpzone 0.1.3 (wz_report /
+  wz_report_problem), not released yet (latest 0.1.2). Plan written into ROADMAP item 8.
+  Asked the warpzone lane to file a request here once 0.1.3 is released.
+- regress.sh in this worker (cgroup quota 8 CPUs, nproc 12): all 12 runs at once → 8 false
+  failures ("stalled … no sync for 10s"); rerun in batches of 4: all 11 pass. If it recurs,
+  cap regress.sh's parallelism to the cgroup quota.
+
 ## 2026-10-17 — Warpzone lockstep co-op (roadmap `spacehog-warpzone-lockstep-co-op`)
 
 - Design: lockstep on the raw input stream (keys/mouse/pads per 70 Hz frame of the emulated
