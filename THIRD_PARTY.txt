@@ -44,5 +44,11 @@ SDL 3 (statically linked) - https://libsdl.org
       misrepresented as being the original software.
    3. This notice may not be removed or altered from any source distribution.
 
+libwarpzone (Warpzone client library, online play)
+--------------------------------------------------
+https://github.com/jarvis-jhk/warpzone - licensed MIT OR Apache-2.0 (used here under MIT).
+The Rust crates it is built from are listed with their licenses in
+LICENSE-libwarpzone-third-party.html (in the release archives).
+
 Operation Spacehog (the game this program runs) is (c) Free Lunch Design, freeware.
 Its data files are not part of this program.

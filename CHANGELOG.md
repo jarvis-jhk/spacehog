@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0
+
+- **Online co-op over Warpzone**: two players on two machines play together.
+  `--warpzone-host` opens a room (player 1), the partner joins with
+  `--warpzone-code CODE`, `--warpzone-join ROOM` (the launcher's Join button) or an
+  invite link (player 2, with their usual player-1 keys or pad). Both machines run the
+  game in lockstep on the shared input, so they stay identical; a checksum of the whole
+  game state is compared twice a second. The input delay follows the ping
+  (`--net-delay N` to set it). If the partner leaves, the game goes on alone.
+- The host's settings, controls and high scores are used for the session; the guest's
+  own `SPACEHOG.SAV` is not touched.
+- `--record` during an online game writes an ordinary replay of the whole session.
+
 ## 0.1.2
 
 - All player input (keys, gamepads, mouse) goes through one per-player input layer,

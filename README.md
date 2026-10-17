@@ -10,7 +10,7 @@ The game data is **not** included. You need the original freeware release
 [DOS Games Archive](https://www.dosgamesarchive.com/download/operation-spacehog):
 unpack its zip anywhere.
 
-What comes next (online co-op, 4 players, mods, leaderboards): [ROADMAP.md](ROADMAP.md).
+What comes next (4 players, mods, leaderboards): [ROADMAP.md](ROADMAP.md).
 
 ## Download
 
@@ -48,12 +48,39 @@ Y = Enter (e.g. confirm quitting), Start = pause (and Space in menus), Back = Es
 High score names can be entered with the pad: up/down pick a letter, A types it,
 B deletes, Y finishes. Everything works without a keyboard.
 
+## Online co-op (Warpzone)
+
+Two players on two machines play together over [Warpzone](https://warpzone.virtualtabletop.io)
+rooms (direct connection with relay fallback, encrypted):
+
+    spacehog --warpzone-host                 # player 1: opens a room, shows its code
+    spacehog --warpzone-code K7QM3X          # player 2: joins with that code
+    spacehog --warpzone-join ROOM            # ... or by room id (the launcher's "Join")
+    spacehog warpzone://join/...             # ... or with an invite link
+
+The host is player 1 and runs the menus (choose 2 players as usual); the guest plays
+player 2 with its usual player-1 keys or its gamepad. The host's settings, controls and
+high scores are used (the guest's own `SPACEHOG.SAV` stays untouched). `--warpzone-private`
+opens an unlisted room (code or invite link only), `--net-delay N` sets the input delay
+(frames of 1/70 s; by default it follows the ping). The Warpzone identity is the launcher's; on a machine without
+one, add `--warpzone-name NAME` once.
+
+Both machines run the same deterministic game in lockstep: every input is applied on both
+at the same emulated time, so nothing but the input crosses the network. A checksum of the
+whole game state is compared twice a second ("out of sync" would show if they ever
+differed). If the partner leaves, the game goes on with the remaining player.
+`--record FILE` on either side writes the session as an ordinary replay.
+
 ## Building
 
 Needs CMake ≥ 3.20, a C11 compiler and SDL 3 (linked statically).
 
     cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=/path/to/sdl3
     cmake --build build
+
+Online co-op needs the Warpzone client library: `scripts/fetch-warpzone.sh linux DIR`
+downloads the pinned libwarpzone release (checksum-verified) and prints its folder; pass
+it as `-DWARPZONE_DIR=...`. Without it the game builds without online play.
 
 Release archives are built by CI (`scripts/ci-build.sh`, on ubuntu-22.04 so the Linux
 binary runs with glibc 2.35 or newer); `scripts/package.sh` builds them locally into `dist/`.
@@ -75,7 +102,11 @@ binary runs with glibc 2.35 or newer); `scripts/package.sh` builds them locally 
 - Input recording/replay (`--record`, `--replay`) is deterministic.
 - Player input: the game reads every player's keys, pad and mouse only through
   `player_input(p)` (`src/game/pinput.c`); `--input-latch` samples it once per tick at the
-  tick wait (lockstep netplay) instead of at the original's read points.
+  tick wait instead of at the original's read points.
+- Online co-op (`src/platform/net.c`, the netplay section of `src/compat/input.c`):
+  lockstep on the raw input stream. `re/net/nettest.sh` runs host and guest against a local
+  Warpzone server and checks that both write identical sync logs and recordings, and that
+  the merged recording matches the emulated original.
 
 ## Licensing
 
@@ -86,4 +117,6 @@ binary runs with glibc 2.35 or newer); `scripts/package.sh` builds them locally 
 - `src/third_party/tsf`: TinySoundFont by Bernhard Schelling, MIT.
 - `src/third_party/nuked_opl3`: Nuked-OPL3 by nukeykt, LGPL-2.1 (binaries must allow
   relinking against a modified version; the full source here satisfies that).
-- SDL 3: zlib license. Full notices: `THIRD_PARTY.txt`.
+- SDL 3: zlib license.
+- libwarpzone (online play): MIT OR Apache-2.0; its own dependencies are listed in
+  `LICENSE-libwarpzone-third-party.html` in the release archives. Full notices: `THIRD_PARTY.txt`.

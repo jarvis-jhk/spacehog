@@ -30,7 +30,8 @@ if [ ! -f "$PREFIX/.done-$SDL_VER" ]; then
    cmake --install "$DL/build-sdl3-$OS"
    touch "$PREFIX/.done-$SDL_VER"
 fi
-GAMEOPT=(-G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$PREFIX")
+WZ=$("$ROOT/scripts/fetch-warpzone.sh" "$OS" "$DL/warpzone")
+GAMEOPT=(-G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$PREFIX" -DWARPZONE_DIR="$WZ" -DSPACEHOG_VERSION="${VER#v}")
 [ "$OS" = windows ] && GAMEOPT+=(-DCMAKE_TOOLCHAIN_FILE="$ROOT/cmake/mingw-w64-x86_64.cmake")
 cmake -S "$ROOT" -B "$ROOT/build-ci-$OS" "${GAMEOPT[@]}"
 cmake --build "$ROOT/build-ci-$OS"
@@ -41,4 +42,4 @@ if [ "$OS" = linux ]; then
    [ "$(printf '%s\n' "$max" GLIBC_2.35 | sort -V | tail -1)" = GLIBC_2.35 ] || { echo "needs $max > 2.35" >&2; exit 1; }
    "$ROOT/build-ci-$OS/$BIN" --help >/dev/null
 fi
-"$ROOT/scripts/pack.sh" "$OS" "$ROOT/build-ci-$OS/$BIN" "$ROOT/dist" "$VER"
+WARPZONE_DIR=$WZ "$ROOT/scripts/pack.sh" "$OS" "$ROOT/build-ci-$OS/$BIN" "$ROOT/dist" "$VER"

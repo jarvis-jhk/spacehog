@@ -101,6 +101,8 @@ typedef struct PLAYER_INPUT {
 PLAYER_INPUT player_input(int p);
 PLAYER_INPUT player_input_sample(int p);   /* always live */
 void player_input_latch(void);            /* tick wait; no-op unless latched */
+int pinput_net_map_key(int sc);           /* netplay hooks (input.c) */
+int pinput_net_pad_slot(void);
 static inline int pin_key(int p, int k) { return (player_input(p).bits >> k) & 1; }
 static inline int pin_pad(int p, int bit) { return (player_input(p).bits & bit) != 0; }
 static inline int pin_enter(int p) { return (player_input(p).bits & PI_ENTER) != 0; }

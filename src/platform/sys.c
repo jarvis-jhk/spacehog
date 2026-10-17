@@ -1,5 +1,6 @@
 /* SDL3 platform layer. */
 #include "sys.h"
+#include "net.h"
 #include "../compat/alleg.h"
 #include "../compat/internal.h"
 #include "../compat/dos.h"
@@ -459,6 +460,14 @@ void sys_poll(void)
    pump();
    if (sys_cfg.fast)
       t = virt_clock + PIT_HZ / 1000;
+   else if (net_session) {
+      /* lockstep: emulated time must not depend on the real clock */
+      t = virt_clock + PIT_HZ / 1000;
+      if (real_now_pit() < t) {
+         sys_sync_leave(0);
+         return;
+      }
+   }
    else {
       t = real_now_pit();
       if (t <= virt_clock) {
@@ -476,6 +485,21 @@ void sys_poll(void)
       last_present_pit = virt_clock;
    }
    sys_sync_leave(0);
+}
+
+/* netplay: real time spent waiting for the partner does not count as emulated time */
+void sys_clock_pause(uint64_t ns)
+{
+   real_base_ns += ns;
+}
+
+/* netplay wait loops: keep the window alive and notice a close request */
+void sys_wait_events(void)
+{
+   SDL_Event ev;
+   SDL_PumpEvents();
+   while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT, SDL_EVENT_QUIT, SDL_EVENT_QUIT) > 0)
+      sys_quit_requested = 1;
 }
 
 void sys_wait_retrace(void)
@@ -612,6 +636,16 @@ uint8_t *sys_read_file(const char *name, size_t *size)
    fclose(f);
    *size = (size_t)n;
    return buf;
+}
+
+void sys_set_save_dir(const char *dir)
+{
+   snprintf(save_dir, sizeof(save_dir), "%s", dir);
+}
+
+const char *sys_get_save_dir(void)
+{
+   return save_dir;
 }
 
 int sys_save_path(const char *name, char *out, size_t outsz)

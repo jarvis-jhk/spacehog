@@ -90,6 +90,23 @@ void sync_w_rng(void)
    sync_w_raw(idx, sizeof(idx));
 }
 
+/* CRC of the complete game state (netplay desync check); independent of the sync log */
+uint32_t sync_state_hash(void)
+{
+   uint32_t saved = cur_hash, h;
+   int i, cap = capturing;
+   if (!crc_table[1])
+      crc_init();
+   capturing = 0;
+   cur_hash = 0xffffffffu;
+   for (i = 0; i < sync_num_sections; i++)
+      sync_state_section(i);
+   h = ~cur_hash;
+   cur_hash = saved;
+   capturing = cap;
+   return h;
+}
+
 static uint32_t crc_buf(uint32_t c, const void *p, size_t n)
 {
    const unsigned char *b = p;

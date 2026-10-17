@@ -18,6 +18,10 @@ void _input_begin_pump(void);
 int _input_replaying(void);
 void input_init_recording(void);
 uint32_t input_random_seed(uint32_t live_seed);
+void input_net_start(uint32_t seed);
+extern int (*input_net_map_key)(int sc);
+extern int (*input_net_pad_slot)(void);
+extern uint32_t (*input_net_hash)(void);
 int _input_keybuf(int *out, int max);
 int _input_pad_bits(int pad);
 

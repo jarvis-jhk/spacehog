@@ -5,7 +5,10 @@
 #ifndef SH_SYNCLOG_H
 #define SH_SYNCLOG_H
 
+#include <stdint.h>
+
 int synclog_open(const char *path, const char *dump_range);
+uint32_t sync_state_hash(void);
 
 /* used by the generated sync_state.c */
 void sync_w_raw(const void *p, int n);

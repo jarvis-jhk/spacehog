@@ -5,6 +5,8 @@
 #include "platform/sys.h"
 #include "game/game.h"
 #include "game/synclog.h"
+#include "game/sh.h"
+#include "platform/net.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +29,13 @@ static void usage(void)
           "  --music fm|gm     fm: original FM music (default); gm: General MIDI via a SoundFont\n"
           "  --soundfont FILE  .sf2 for --music gm (default: first *.sf2 in the data/save dir)\n"
           "  (both can also be set in spacehog.ini in the save dir: music = gm, soundfont = FILE)\n"
+          "  --warpzone-host   host an online co-op game (Warpzone room; you are player 1)\n"
+          "  --warpzone-join ROOM / --warpzone-code CODE / warpzone://join/...\n"
+          "                    join one (you are player 2; the host's settings are used)\n"
+          "  --warpzone-private  host an unlisted room (join by code or invite link)\n"
+          "  --warpzone-name NAME  Warpzone name to register if this device has none\n"
+          "  --warpzone-server URL  Warpzone server (default: WARPZONE_SERVER or the public one)\n"
+          "  --net-delay N     online input delay in frames of 1/70 s (host; default: from the ping)\n"
           "  --input-latch     read player input once per tick (lockstep; not the original's timing)\n"
           "  --sync-log FILE   write the differential-test sync log (re/refemu)\n"
           "  --sync-dump A[-B] include full canonical state for records A..B\n");
@@ -88,6 +97,14 @@ int main(int argc, char **argv)
       else if (!strcmp(a, "--soundfont") && next) { sys_cfg.soundfont = next; sys_cfg.music_gm = 1; i++; }
       else if (!strcmp(a, "--music") && next) { sys_cfg.music_gm = !strcmp(next, "gm"); i++; }
       else if (!strcmp(a, "--input-latch")) player_input_latched = 1;
+      else if (!strcmp(a, "--warpzone-host")) net_cfg.requested = net_cfg.host = 1;
+      else if (!strcmp(a, "--warpzone-join") && next) { net_cfg.requested = 1; net_cfg.join = next; i++; }
+      else if (!strcmp(a, "--warpzone-code") && next) { net_cfg.requested = 1; net_cfg.code = next; i++; }
+      else if (!strncmp(a, "warpzone://", 11)) { net_cfg.requested = 1; net_cfg.invite = a; }
+      else if (!strcmp(a, "--warpzone-private")) net_cfg.private_room = 1;
+      else if (!strcmp(a, "--warpzone-name") && next) { net_cfg.name = next; i++; }
+      else if (!strcmp(a, "--warpzone-server") && next) { net_cfg.server = next; i++; }
+      else if (!strcmp(a, "--net-delay") && next) { net_delay = atoi(next); i++; }
       else if (!strcmp(a, "--sync-log") && next) { sync_log = next; i++; }
       else if (!strcmp(a, "--sync-dump") && next) { sync_dump = next; i++; }
       else if (!strcmp(a, "--help") || !strcmp(a, "-h")) { usage(); return 0; }
@@ -99,8 +116,32 @@ int main(int argc, char **argv)
       else if (game_argc < 31) game_argv[game_argc++] = argv[i];
    }
    game_argv[game_argc] = NULL;
+   if (getenv("WARPZONE_JOIN") && *getenv("WARPZONE_JOIN")) {
+      net_cfg.requested = 1;
+      net_cfg.join = getenv("WARPZONE_JOIN");
+   }
+   if (getenv("WARPZONE_HOST") && !strcmp(getenv("WARPZONE_HOST"), "1"))
+      net_cfg.requested = net_cfg.host = 1;
    if (sys_init() != 0)
       return 1;
+   if (net_cfg.requested) {
+      uint32_t seed;
+      int nargc = game_argc;
+      char **nargv = game_argv;
+      if (net_start(&nargc, &nargv, &seed) != 0) {
+         sys_shutdown();
+         return 1;
+      }
+      game_argc = nargc;
+      if (nargv != game_argv) {
+         for (i = 0; i <= nargc && i < 32; i++)
+            game_argv[i] = nargv[i];
+      }
+      input_net_start(seed);
+      input_net_map_key = pinput_net_map_key;
+      input_net_pad_slot = pinput_net_pad_slot;
+      input_net_hash = sync_state_hash;
+   }
    input_init_recording();
    if (sync_log && synclog_open(sync_log, sync_dump) != 0)
       sys_log("cannot open sync log %s", sync_log);

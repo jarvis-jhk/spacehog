@@ -6,6 +6,7 @@
 #include "internal.h"
 #include "input.h"
 #include "../platform/sys.h"
+#include "../platform/net.h"
 #include <SDL3/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,6 +44,7 @@ static JOYSTICK_STATE live_pad[MAX_PADS];
 static SDL_Gamepad *pads[MAX_PADS];
 
 static void read_next_event(void);
+static void net_queue(int kind, int a, int b, int c);
 
 static float mouse_fx, mouse_fy;
 static int mouse_range_w = 320, mouse_range_h = 200;
@@ -109,6 +111,10 @@ void _keyboard_event(int scancode, int down, int ascii, int repeat)
    (void)repeat;
    if (scancode <= 0 || scancode >= 128)
       return;
+   if (net_session) {
+      net_queue('k', scancode, down, ascii);
+      return;
+   }
    if (!down && pressed_in_batch[scancode]) {
       deferred_release[scancode] = 1;
       return;
@@ -239,7 +245,9 @@ void _mouse_motion(float dx, float dy)
    iy = (int)mouse_fy;
    mouse_fx -= (float)ix;
    mouse_fy -= (float)iy;
-   if (ix || iy) {
+   if ((ix || iy) && net_session)
+      net_queue('m', ix, iy, 0);
+   else if (ix || iy) {
       rec("m %d %d", ix, iy);
       apply_mouse_move(ix, iy);
    }
@@ -251,6 +259,13 @@ void _mouse_button(int button, int down)
    int nb;
    if (!bit)
       return;
+   if (net_session) {
+      static int local_b;
+      nb = down ? (local_b | bit) : (local_b & ~bit);
+      if (nb != local_b)
+         net_queue('b', local_b = nb, 0, 0);
+      return;
+   }
    nb = down ? (mouse_b | bit) : (mouse_b & ~bit);
    if (nb != mouse_b) {
       rec("b %d", nb);
@@ -264,7 +279,7 @@ void _gamepad_hotplug(void)
 {
    SDL_JoystickID *ids;
    int n, i, old = num_joysticks;
-   if (replaying) {
+   if (replaying && !net_session) {
       /* the pad count comes from the replay ('n' events, recorded right here) */
       while (rep_ev.valid && rep_ev.kind == 'n' && rep_ev.clock <= sys_clock()) {
          num_joysticks = MID(0, rep_ev.a, MAX_PADS);
@@ -289,6 +304,10 @@ void _gamepad_hotplug(void)
          pads[slot] = SDL_OpenGamepad(ids[i]);
    }
    SDL_free(ids);
+   if (net_session) {
+      num_joysticks = MAX_PADS - 1;      /* fixed in a session: as recorded ("n 3" at 0) */
+      return;
+   }
    num_joysticks = 0;
    for (i = 0; i < MAX_PADS; i++)
       if (pads[i])
@@ -414,9 +433,15 @@ int _input_replaying(void)
    return replaying;
 }
 
+static void net_tick(void);
+
 void _input_tick_hook(void)
 {
    int i;
+   if (net_session) {
+      net_tick();
+      return;
+   }
    if (replaying) {
       while (rep_ev.valid && rep_ev.clock <= sys_clock()) {
          switch (rep_ev.kind) {
@@ -446,6 +471,191 @@ void _input_tick_hook(void)
       if (bits != live_pad[i].bits) {
          rec("j %d %d", i, bits);
          set_pad_state(&live_pad[i], bits);
+      }
+   }
+}
+
+/* ---------------------------------------------------------------- netplay (net.h)
+ * In a net session nothing local touches the game's input state directly: this
+ * machine's events (or a --replay file, for tests) are queued per frame and sent, and
+ * net_tick() applies both players' frames at the first pump of each frame, host's events
+ * first. Per-source key/button/pad state is OR-ed, so one side releasing does not cancel
+ * what the other holds. Applied events go to --record: the merged stream is a replay. */
+
+int (*input_net_map_key)(int sc);      /* sender side: this player's scancode, <= 0 = drop */
+int (*input_net_pad_slot)(void);       /* sender side: virtual pad for this player's pads */
+uint32_t (*input_net_hash)(void);      /* complete game state (sync_state) */
+
+#define NET_HASH_EVERY 35              /* frames: twice a second */
+#define NET_RING 64
+static NetEvent pend[NET_MAX_EVENTS], carry[NET_MAX_EVENTS];
+static int npend, ncarry;
+static unsigned char pressed_in_frame[128];
+static NetEvent local_ring[NET_RING][NET_MAX_EVENTS];
+static int local_ring_n[NET_RING];
+static uint32_t next_frame;
+static unsigned char src_key[2][128];
+static int src_mb[2], src_pad[2][MAX_PADS];
+static int local_pad_bits, local_pad_slot, script_pad[MAX_PADS];
+
+static void net_push(NetEvent *list, int *n, int kind, int a, int b, int c)
+{
+   if (*n >= NET_MAX_EVENTS)
+      return;
+   list[*n].kind = (uint8_t)kind;
+   list[*n].a = (int16_t)a;
+   list[*n].b = (int16_t)b;
+   list[*n].c = (uint8_t)c;
+   (*n)++;
+}
+
+static void net_queue(int kind, int a, int b, int c)
+{
+   if (kind == 'k') {
+      if (input_net_map_key)
+         a = input_net_map_key(a);
+      if (a <= 0 || a >= 128)
+         return;
+      /* a tap within one frame: release in the next one, or the game never sees it */
+      if (!b && pressed_in_frame[a]) {
+         net_push(carry, &ncarry, 'k', a, 0, 0);
+         return;
+      }
+      if (b)
+         pressed_in_frame[a] = 1;
+   }
+   if (kind == 'm' && npend && pend[npend - 1].kind == 'm' &&
+       abs(pend[npend - 1].a + a) < 30000 && abs(pend[npend - 1].b + b) < 30000) {
+      pend[npend - 1].a = (int16_t)(pend[npend - 1].a + a);
+      pend[npend - 1].b = (int16_t)(pend[npend - 1].b + b);
+      return;
+   }
+   net_push(pend, &npend, kind, a, b, c);
+}
+
+static void net_apply(int s, const NetEvent *e)
+{
+   int v;
+   switch (e->kind) {
+      case 'k':
+         if (e->a <= 0 || e->a >= 128)
+            break;
+         src_key[s][e->a] = e->b != 0;
+         if (e->b) {
+            rec("k %d 1 %d", e->a, e->c);
+            apply_key(e->a, 1, e->c);
+         }
+         else if (!src_key[s ^ 1][e->a]) {
+            rec("k %d 0 0", e->a);
+            apply_key(e->a, 0, 0);
+         }
+         break;
+      case 'm':
+         rec("m %d %d", e->a, e->b);
+         apply_mouse_move(e->a, e->b);
+         break;
+      case 'b':
+         src_mb[s] = e->a & 7;
+         v = src_mb[0] | src_mb[1];
+         if (v != mouse_b) {
+            rec("b %d", v);
+            mouse_b = v;
+         }
+         break;
+      case 'j':
+         if (e->a < 0 || e->a >= MAX_PADS)
+            break;
+         src_pad[s][e->a] = e->b & 0xffff;
+         v = src_pad[0][e->a] | src_pad[1][e->a];
+         if (v != live_pad[e->a].bits) {
+            rec("j %d %d", e->a, v);
+            set_pad_state(&live_pad[e->a], v);
+         }
+         break;
+      case 'q':
+         rec("q");
+         sys_quit_requested = 1;
+         break;
+      default:
+         break;
+   }
+}
+
+static void net_tick(void)
+{
+   uint32_t cur = (uint32_t)(sys_clock() / NET_FRAME_PIT);
+   int i, bits = 0, slot;
+   num_joysticks = MAX_PADS - 1;
+   if (replaying) {
+      /* a replay file is this player's input (tests) */
+      while (rep_ev.valid && rep_ev.clock <= sys_clock()) {
+         switch (rep_ev.kind) {
+            case 'k': net_queue('k', rep_ev.a, rep_ev.b, rep_ev.c); break;
+            case 'm': net_queue('m', rep_ev.a, rep_ev.b, 0); break;
+            case 'b': net_queue('b', rep_ev.a, 0, 0); break;
+            case 'j':
+               if (rep_ev.a >= 0 && rep_ev.a < MAX_PADS)
+                  script_pad[rep_ev.a] = rep_ev.b;
+               break;
+            case 'q': net_queue('q', 0, 0, 0); break;
+            default: break;
+         }
+         read_next_event();
+      }
+      for (i = 0; i < MAX_PADS; i++)
+         bits |= script_pad[i];
+      if (!rep_ev.valid && rep_file) {
+         fclose(rep_file);
+         rep_file = NULL;
+         replaying = 0;
+      }
+   }
+   else
+      for (i = 0; i < MAX_PADS; i++)
+         bits |= pad_bits(pads[i]);
+   slot = input_net_pad_slot ? input_net_pad_slot() : 0;
+   if (slot != local_pad_slot) {
+      if (local_pad_bits)
+         net_queue('j', local_pad_slot, 0, 0);
+      local_pad_slot = slot;
+      local_pad_bits = 0;
+   }
+   if (bits != local_pad_bits) {
+      net_queue('j', slot, bits, 0);
+      local_pad_bits = bits;
+   }
+   while (next_frame <= cur) {
+      static NetEvent remote[NET_MAX_EVENTS];
+      uint32_t f = next_frame++, out = f + (uint32_t)net_delay, hf = 0xffffffffu, h = 0;
+      int nr = 0, nl, r;
+      if (f % NET_HASH_EVERY == 0 && input_net_hash) {
+         hf = f;
+         h = input_net_hash();
+         net_local_hash(f, h);
+      }
+      /* close this machine's frame f + delay and send it */
+      memcpy(local_ring[out % NET_RING], pend, sizeof(NetEvent) * (size_t)npend);
+      local_ring_n[out % NET_RING] = npend;
+      net_send_frame(out, pend, npend, hf, h);
+      memcpy(pend, carry, sizeof(NetEvent) * (size_t)ncarry);
+      npend = ncarry;
+      ncarry = 0;
+      memset(pressed_in_frame, 0, sizeof(pressed_in_frame));
+      for (i = 0; i < npend; i++)
+         if (pend[i].kind == 'k' && pend[i].b)
+            pressed_in_frame[pend[i].a] = 1;
+      /* frame f: both sides' events (frames below the delay are empty everywhere) */
+      nl = f < (uint32_t)net_delay ? 0 : local_ring_n[f % NET_RING];
+      if (f >= (uint32_t)net_delay) {
+         r = net_get_frame(f, remote, NET_MAX_EVENTS);
+         nr = r < 0 ? 0 : r;
+      }
+      for (r = 0; r < 2; r++) {
+         int from_local = (r == net_me);
+         const NetEvent *ev = from_local ? local_ring[f % NET_RING] : remote;
+         int n = from_local ? nl : nr;
+         for (i = 0; i < n; i++)
+            net_apply(r, &ev[i]);
       }
    }
 }
@@ -486,8 +696,10 @@ void input_init_recording(void)
          while (fgets(line, sizeof(line), rep_file)) {
             unsigned s;
             if (sscanf(line, "seed %u", &s) == 1) {
-               rep_seed = s;
-               rep_has_seed = 1;
+               if (!net_session) {           /* a net session's seed comes from the host */
+                  rep_seed = s;
+                  rep_has_seed = 1;
+               }
                pos = ftell(rep_file);
                continue;
             }
@@ -511,4 +723,12 @@ void input_init_recording(void)
       if (rec_file)
          fprintf(rec_file, "# Spacehog input recording v1\nseed %u\n", rep_seed);
    }
+   if (net_session)   /* fixed pad count: both players may pick a pad, wherever it is */
+      rec("n %d", MAX_PADS - 1);
+}
+
+void input_net_start(uint32_t seed)
+{
+   rep_seed = seed;
+   rep_has_seed = 1;
 }

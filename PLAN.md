@@ -144,8 +144,16 @@ Ground rule: the original-compatible path (1-2 players, original rules) must kee
 - **State snapshot**: `src/game/sync_state.c` (generated from `re/ghidra/types.h`) already
   enumerates the complete game state; extend it into save/restore (pointer fields are
   datafile-relative) for rollback netplay and save states. RNG state is `dos_rand_state`.
-- **Netplay**: deterministic lockstep with input delay first (2 players over UDP, inputs
-  per tick + periodic state hash from sync_state to detect desyncs), rollback later.
+- **Netplay** — DONE for 2 players (0.2.0, `src/platform/net.c`, netplay section of
+  `src/compat/input.c`): lockstep on the *raw* input stream rather than on player_input,
+  so menus, dialogs, pause and name entry stay deterministic without touching game code.
+  Each side's key/mouse/pad events are collected per frame (one retrace of the emulated
+  clock), sent reliably with an input delay, and applied on both at the first pump of the
+  frame (host's first; per-source OR state). Guest: player-1 keys remapped to player 2's,
+  pad on the slot pjoy(1) reads (pinput.c hooks). Fixed pad count 3 (`n 3`). sys_poll
+  steps 1 ms of emulated time in a session (never real time). Seed, SAV and game args
+  come from the host. The merged stream is recorded as a normal replay and difftests
+  against the original (`re/net/nettest.sh`). Rollback later.
 - **4 players**: `g_player[2]`, `bmp_bar[2]`, `two_players` (45 uses), `rand() % 2` target
   choice, spawn positions, HUD (bars at top and bottom take 11 px each). Needs new HUD
   layout (compact bars) and a `num_players` replacing `two_players`; keep the 2-player

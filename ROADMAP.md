@@ -17,9 +17,11 @@ listed in `PLAN.md` and pinned by the differential tests.
    0.1.1 is the first release built this way.
 2. ~~**Per-tick input layer**~~ — done in 0.1.2: `player_input(p)` (`src/game/pinput.c`),
    live by default (difftest-pinned), `--input-latch` = once per tick at the tick wait.
-3. **Online co-op over Warpzone rooms** — deterministic lockstep with input delay,
-   2 players first; per-tick `sync_state` hash to detect desyncs; `--warpzone-host`,
-   `--warpzone-join ROOM`, then raise the descriptor's tier and add `host`/`join`.
+3. ~~**Online co-op over Warpzone rooms**~~ — done in 0.2.0 (2 players): lockstep on
+   the raw input stream per 70 Hz frame with input delay from the ping, `sync_state`
+   CRC compared twice a second, `--warpzone-host` / `--warpzone-join ROOM` /
+   `--warpzone-code` / invite links; tested by `re/net/nettest.sh`. Descriptor tier 2
+   with `host`/`join`: warpzone PR. Later: in-game room list and name prompt.
 4. **Leaderboards** `score-1p` / `score-2p` (seasonal): submitted at game over, never
    from `/judge` or modded runs, with the run's input recording so a score can be checked.
 5. **4 players** — `num_players` instead of `two_players`, compact HUD; the 2-player

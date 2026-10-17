@@ -55,6 +55,11 @@ int sys_find_soundfont(char *out, size_t outsz);
 /* Open a file in the save directory. */
 void *sys_fopen_save(const char *name, const char *mode);
 int sys_save_path(const char *name, char *out, size_t outsz);
+void sys_set_save_dir(const char *dir);
+const char *sys_get_save_dir(void);
+/* netplay */
+void sys_clock_pause(uint64_t ns);
+void sys_wait_events(void);
 
 /* Audio: the mixer callback is called from the audio thread. */
 typedef void (*sys_audio_cb)(int16_t *out, int frames, void *user);

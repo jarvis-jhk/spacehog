@@ -14,6 +14,10 @@ cp "$BIN" "$d/"
 cp "$ROOT/README.md" "$ROOT/CHANGELOG.md" "$ROOT/LICENSE" "$ROOT/THIRD_PARTY.txt" "$d/"
 echo "$VER" > "$d/VERSION.txt"
 cp "$ROOT/src/third_party/nuked_opl3/LICENSE" "$d/LICENSE-NukedOPL3.txt"
+if [ -n "$WARPZONE_DIR" ]; then
+   cp "$WARPZONE_DIR/LICENSE-MIT" "$d/LICENSE-libwarpzone.txt"
+   cp "$WARPZONE_DIR/THIRD-PARTY-NOTICES.html" "$d/LICENSE-libwarpzone-third-party.html"
+fi
 printf 'Copy SPACEHOG.DAT, SHLEV.DAT, SHBGS.DAT and SHSND.DAT from the original\nOperation Spacehog (freeware) into this directory, then start the game.\n' > "$d/PUT_GAME_FILES_HERE.txt"
 if [ "$OS" = linux ]; then
    strip "$d/spacehog"

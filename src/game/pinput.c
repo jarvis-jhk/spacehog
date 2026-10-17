@@ -1,5 +1,6 @@
 /* Per-player input layer: see "player input" in sh.h. */
 #include "sh.h"
+#include "../platform/net.h"
 
 int player_input_latched;
 static PLAYER_INPUT latched[2];
@@ -50,4 +51,28 @@ PLAYER_INPUT player_input(int p)
    if (!have_latch)
       player_input_latch();
    return latched[p];
+}
+
+/* Netplay (input.c hooks, sender side): this machine plays net_me (0 host, 1 guest).
+ * The guest's player-1 keys drive player 2; its pads land where pjoy(1) reads. */
+int pinput_net_map_key(int sc)
+{
+   int k;
+   if (net_me == 0)
+      return sc;
+   for (k = 0; k < 7; k++)
+      if (g_keys[7 + k] == sc)
+         return sc;
+   for (k = 0; k < 7; k++)
+      if (g_keys[k] == sc)
+         return g_keys[7 + k];
+   return sc;
+}
+
+int pinput_net_pad_slot(void)
+{
+   int p1 = g_player[0].control == CTRL_PAD, p2 = g_player[1].control == CTRL_PAD;
+   if (net_me == 0)
+      return !p1 && p2 ? 2 : 0;          /* pad 0 is player 2's then (pjoy) */
+   return p1 ? 1 : 0;
 }
