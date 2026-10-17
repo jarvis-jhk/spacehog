@@ -82,13 +82,31 @@ extern ENEMY g_enemy[50];         /* 0xae6c8 */
 extern ENEMY g_enemy_tmpl[40];    /* 0xc8fd0 */
 extern SHOT g_shot[200];          /* 0xa5f0c */
 extern LEVELEVENT g_event[256];        /* 0xaa088 */
-/* player p's key binding k is down */
-#define pkey(p, k) key[g_keys[(p) * 7 + (k)]]
-
-static inline JOYSTICK_STATE *pjoy(int p)
-{
-   return &joy[(g_player[0].control == CTRL_PAD && g_player[1].control == CTRL_PAD) ? p : 0];
-}
+/* --------------------------------------------------------------- player input (pinput.c)
+ * Everything the game reads from a player's devices, as one snapshot per player: the
+ * player's 7 key bindings, its pad (pjoy), the mouse and Enter. Game code reads player
+ * input only through these accessors. Default: sampled live at every read, so the read
+ * points stay those of the original (difftest-pinned). player_input_latched = 1 (lockstep,
+ * --input-latch): sampled once per tick at the tick wait and served from that snapshot. */
+enum {
+   PI_PAD_UP = 1 << 8, PI_PAD_DOWN = 1 << 9, PI_PAD_LEFT = 1 << 10, PI_PAD_RIGHT = 1 << 11,
+   PI_PAD_B1 = 1 << 12, PI_PAD_B2 = 1 << 13, PI_PAD_B3 = 1 << 14,   /* pjoy(p)->b[0..2] */
+   PI_ENTER = 1 << 15,
+   PI_MOUSE_SHIFT = 16                                               /* mouse_b, 3 bits */
+};
+typedef struct PLAYER_INPUT {
+   unsigned int bits;     /* 1 << PK_x = key binding x down, PI_* */
+   int mouse_x, mouse_y;
+} PLAYER_INPUT;
+PLAYER_INPUT player_input(int p);
+PLAYER_INPUT player_input_sample(int p);   /* always live */
+void player_input_latch(void);            /* tick wait; no-op unless latched */
+static inline int pin_key(int p, int k) { return (player_input(p).bits >> k) & 1; }
+static inline int pin_pad(int p, int bit) { return (player_input(p).bits & bit) != 0; }
+static inline int pin_enter(int p) { return (player_input(p).bits & PI_ENTER) != 0; }
+static inline int pin_mouse_b(int p) { return (player_input(p).bits >> PI_MOUSE_SHIFT) & 7; }
+static inline int pin_mouse_x(int p) { return player_input(p).mouse_x; }
+static inline int pin_mouse_y(int p) { return player_input(p).mouse_y; }
 extern PICKUP g_pickup[10];         /* 0xae340 */
 extern EXPLOSION g_expl[50];         /* 0xc8954 explosions */
 extern EBULLET g_ebullet[100];        /* 0xcac34 enemy bullets */

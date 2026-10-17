@@ -132,7 +132,12 @@ Ground rule: the original-compatible path (1-2 players, original rules) must kee
   pumps input mid-tick. Lockstep/rollback needs input to change only at the tick wait:
   in net mode, latch all player inputs at the tick wait (end of `play_game`'s loop) and
   serve `key[]`/`joy[]` from the latched snapshot for the whole tick.
-- **Per-player input**: replace direct `key[g_keys[p*7+k]]` / `pjoy(p)` / mouse reads in
+- **Per-player input** — DONE (0.1.2, `src/game/pinput.c`): `PLAYER_INPUT player_input(p)`
+  = key-binding bits, pjoy bits, Enter, mouse buttons + position; live unless
+  `player_input_latched` (`--input-latch`, latched in `wait_tick()`). Still read directly
+  (system keys, not per player): Esc/pause/F12 screenshot, TAB+Enter console, cheats,
+  dialog yes/no, menus/options. Netplay must share those too (pause/quit as a tick event).
+  Original note: replace direct `key[g_keys[p*7+k]]` / `pjoy(p)` / mouse reads in
   player code by one `player_input(p)` bitmask (up/down/left/right/fire/select/special),
   filled per tick from the player's device (keyboard, pad, mouse, network). Verified
   equivalent by the difftest as long as sampling points stay the same.

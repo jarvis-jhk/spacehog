@@ -73,6 +73,9 @@ binary runs with glibc 2.35 or newer); `scripts/package.sh` builds them locally 
   the port and compares the complete game state and every drawing/sound call at every game
   tick. Full playthroughs and randomized 1/2-player sessions match exactly.
 - Input recording/replay (`--record`, `--replay`) is deterministic.
+- Player input: the game reads every player's keys, pad and mouse only through
+  `player_input(p)` (`src/game/pinput.c`); `--input-latch` samples it once per tick at the
+  tick wait (lockstep netplay) instead of at the original's read points.
 
 ## Licensing
 

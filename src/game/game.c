@@ -97,13 +97,13 @@ int dialog(const char *text,RLE_SPRITE *face,int mode,int typewriter)
         poll_joystick();
       }
       for (p = 0; (int)p <= (int)(unsigned int)two_players; p++) {
-        if ((g_player[p].control == CTRL_KEYBOARD) && (pkey(p, PK_FIRE) != 0)) {
+        if ((g_player[p].control == CTRL_KEYBOARD) && (pin_key(p, PK_FIRE) != 0)) {
           local_14 = 1;
         }
-        if ((g_player[p].control == CTRL_PAD) && (iVar2 = pjoy(p)->b[0], iVar2 != 0)) {
+        if ((g_player[p].control == CTRL_PAD) && (iVar2 = pin_pad(p, PI_PAD_B1), iVar2 != 0)) {
           local_14 = 1;
         }
-        if ((g_player[p].control == '\x02') && (uVar3 = mouse_b, (uVar3 & 1) != 0)) {
+        if ((g_player[p].control == '\x02') && (uVar3 = pin_mouse_b(p), (uVar3 & 1) != 0)) {
           local_14 = 1;
         }
       }
@@ -436,51 +436,51 @@ int ship_select(int p)
     local_14 = 0;
     local_1c = 0;
     if ((g_player[p].control == CTRL_PAD) && (joy_present != 0)) {
-      iVar3 = pjoy(p)->up;
+      iVar3 = pin_pad(p, PI_PAD_UP);
       local_c = (unsigned int)(iVar3 != 0);
-      iVar3 = pjoy(p)->down;
+      iVar3 = pin_pad(p, PI_PAD_DOWN);
       local_10 = (unsigned int)(iVar3 != 0);
-      iVar3 = pjoy(p)->left;
+      iVar3 = pin_pad(p, PI_PAD_LEFT);
       local_18 = (unsigned int)(iVar3 != 0);
-      iVar3 = pjoy(p)->right;
+      iVar3 = pin_pad(p, PI_PAD_RIGHT);
       local_14 = (unsigned int)(iVar3 != 0);
-      iVar3 = pjoy(p)->b[0];
+      iVar3 = pin_pad(p, PI_PAD_B1);
       local_1c = (unsigned int)(iVar3 != 0);
     }
     else if (g_player[p].control == CTRL_KEYBOARD) {
-      local_c = (unsigned int)(pkey(p, PK_UP) != 0);
-      local_10 = (unsigned int)(pkey(p, PK_DOWN) != 0);
-      local_18 = (unsigned int)(pkey(p, PK_LEFT) != 0);
-      local_14 = (unsigned int)(pkey(p, PK_RIGHT) != 0);
-      local_1c = (unsigned int)(pkey(p, PK_FIRE) != 0);
+      local_c = (unsigned int)(pin_key(p, PK_UP) != 0);
+      local_10 = (unsigned int)(pin_key(p, PK_DOWN) != 0);
+      local_18 = (unsigned int)(pin_key(p, PK_LEFT) != 0);
+      local_14 = (unsigned int)(pin_key(p, PK_RIGHT) != 0);
+      local_1c = (unsigned int)(pin_key(p, PK_FIRE) != 0);
     }
     else {
-      uVar1 = mouse_b;
+      uVar1 = pin_mouse_b(p);
       local_10 = (unsigned int)((uVar1 & 2) != 0);
-      uVar1 = mouse_b;
+      uVar1 = pin_mouse_b(p);
       if ((uVar1 & 1) != 0) {
         local_1c = 1;
       }
     }
-    cVar2 = key[0x1c];
+    cVar2 = (char)pin_enter(p);
     if (cVar2 != 0) {
       local_1c = 1;
     }
-    if ((((pkey(p, PK_FIRE) == 0) && (cVar2 = key[0x1c], cVar2 == 0)) &&
-        (iVar3 = pjoy(p)->b[0], iVar3 == 0)) && (uVar1 = mouse_b, (uVar1 & 1) == 0)) {
+    if ((((pin_key(p, PK_FIRE) == 0) && (cVar2 = (char)pin_enter(p), cVar2 == 0)) &&
+        (iVar3 = pin_pad(p, PI_PAD_B1), iVar3 == 0)) && (uVar1 = pin_mouse_b(p), (uVar1 & 1) == 0)) {
       local_234[g_keys[p * 7 + PK_FIRE] + 6] = 0;
     }
-    if ((pkey(p, PK_UP) == 0) && (iVar3 = pjoy(p)->up, iVar3 == 0)) {
+    if ((pin_key(p, PK_UP) == 0) && (iVar3 = pin_pad(p, PI_PAD_UP), iVar3 == 0)) {
       local_234[g_keys[p * 7 + PK_UP] + 6] = 0;
     }
-    if (((pkey(p, PK_DOWN) == 0) && (iVar3 = pjoy(p)->down, iVar3 == 0)) &&
-       (uVar1 = mouse_b, (uVar1 & 2) == 0)) {
+    if (((pin_key(p, PK_DOWN) == 0) && (iVar3 = pin_pad(p, PI_PAD_DOWN), iVar3 == 0)) &&
+       (uVar1 = pin_mouse_b(p), (uVar1 & 2) == 0)) {
       local_234[g_keys[p * 7 + PK_DOWN] + 6] = 0;
     }
-    if ((pkey(p, PK_LEFT) == 0) && (iVar3 = pjoy(p)->up, iVar3 == 0)) {
+    if ((pin_key(p, PK_LEFT) == 0) && (iVar3 = pin_pad(p, PI_PAD_UP), iVar3 == 0)) {
       local_234[g_keys[p * 7 + PK_LEFT] + 6] = 0;
     }
-    if ((pkey(p, PK_RIGHT) == 0) && (iVar3 = pjoy(p)->down, iVar3 == 0)) {
+    if ((pin_key(p, PK_RIGHT) == 0) && (iVar3 = pin_pad(p, PI_PAD_DOWN), iVar3 == 0)) {
       local_234[g_keys[p * 7 + PK_RIGHT] + 6] = 0;
     }
     blit(bmp_world,bmp_buf,0,0,0,0,0x140,200);
@@ -769,13 +769,13 @@ void level_end_tally(void)
       poll_joystick();
     }
     for (p = 0; p <= (int)(unsigned int)two_players; p++) {
-      if ((g_player[p].control == CTRL_KEYBOARD) && (pkey(p, PK_FIRE) != 0)) {
+      if ((g_player[p].control == CTRL_KEYBOARD) && (pin_key(p, PK_FIRE) != 0)) {
         bVar3 = true;
       }
-      if ((g_player[p].control == CTRL_PAD) && (iVar1 = pjoy(p)->b[0], iVar1 != 0)) {
+      if ((g_player[p].control == CTRL_PAD) && (iVar1 = pin_pad(p, PI_PAD_B1), iVar1 != 0)) {
         bVar3 = true;
       }
-      if ((g_player[p].control == '\x02') && (iVar1 = mouse_b, iVar1 != 0)) {
+      if ((g_player[p].control == '\x02') && (iVar1 = pin_mouse_b(p), iVar1 != 0)) {
         bVar3 = true;
       }
     }
@@ -1223,8 +1223,8 @@ void play_game(void)
         }
         local_4 = (unsigned int)(p == 0);
         if (((g_player[p].dead != 0) && (1 < g_player[local_4].lives)) &&
-           (((g_player[p].control == CTRL_PAD && (iVar6 = pjoy(p)->b[2], iVar6 != 0)) ||
-            (pkey(p, PK_SPECIAL) != 0)))) {
+           (((g_player[p].control == CTRL_PAD && (iVar6 = pin_pad(p, PI_PAD_B3), iVar6 != 0)) ||
+            (pin_key(p, PK_SPECIAL) != 0)))) {
           g_player[local_4].lives--;
           g_player[p].lives++;
           g_player[p].dead = 0;
@@ -1233,71 +1233,71 @@ void play_game(void)
         if (((g_player[p].dead == 0) && (g_player[p].warp_in == 0)) &&
            (g_player[p].blast == 0)) {
           if (g_player[p].control == CTRL_PAD) {
-            iVar6 = pjoy(p)->up;
+            iVar6 = pin_pad(p, PI_PAD_UP);
             if (iVar6 != 0) {
               g_player[p].vy--;
             }
-            iVar6 = pjoy(p)->down;
+            iVar6 = pin_pad(p, PI_PAD_DOWN);
             if (iVar6 != 0) {
               g_player[p].vy++;
             }
-            iVar6 = pjoy(p)->left;
+            iVar6 = pin_pad(p, PI_PAD_LEFT);
             if (iVar6 != 0) {
               g_player[p].vx--;
             }
-            iVar6 = pjoy(p)->right;
+            iVar6 = pin_pad(p, PI_PAD_RIGHT);
             if (iVar6 != 0) {
               g_player[p].vx++;
             }
-            if ((0 < g_player[p].vx) && (iVar6 = pjoy(p)->right, iVar6 == 0)) {
+            if ((0 < g_player[p].vx) && (iVar6 = pin_pad(p, PI_PAD_RIGHT), iVar6 == 0)) {
               g_player[p].vx--;
             }
-            if ((g_player[p].vx < 0) && (iVar6 = pjoy(p)->left, iVar6 == 0)) {
+            if ((g_player[p].vx < 0) && (iVar6 = pin_pad(p, PI_PAD_LEFT), iVar6 == 0)) {
               g_player[p].vx++;
             }
-            if ((0 < g_player[p].vy) && (iVar6 = pjoy(p)->down, iVar6 == 0)) {
+            if ((0 < g_player[p].vy) && (iVar6 = pin_pad(p, PI_PAD_DOWN), iVar6 == 0)) {
               g_player[p].vy--;
             }
-            if ((g_player[p].vy < 0) && (iVar6 = pjoy(p)->up, iVar6 == 0)) {
+            if ((g_player[p].vy < 0) && (iVar6 = pin_pad(p, PI_PAD_UP), iVar6 == 0)) {
               g_player[p].vy++;
             }
-            iVar6 = pjoy(p)->b[1];
+            iVar6 = pin_pad(p, PI_PAD_B2);
             if (((iVar6 != 0) && (-1 < g_player[p].powerup)) && (g_player[p].select_held == 0)) {
               buy_powerup(p);
             }
-            iVar6 = pjoy(p)->b[1];
+            iVar6 = pin_pad(p, PI_PAD_B2);
             if (iVar6 == 0) {
               g_player[p].select_held = 0;
             }
-            iVar6 = pjoy(p)->b[0];
+            iVar6 = pin_pad(p, PI_PAD_B1);
             if ((iVar6 == 0) && (g_player[p].charge != 0)) {
               player_fire(p);
             }
-            iVar6 = pjoy(p)->b[0];
+            iVar6 = pin_pad(p, PI_PAD_B1);
             if (iVar6 == 0) {
               g_player[p].fire_wait = 0;
             }
-            iVar6 = pjoy(p)->b[0];
+            iVar6 = pin_pad(p, PI_PAD_B1);
             if ((iVar6 != 0) && (g_player[p].buildup != 0)) {
               g_player[p].charge_tick = (unsigned int)g_player[p].buildup + g_player[p].charge_tick;
             }
-            iVar6 = pjoy(p)->b[0];
+            iVar6 = pin_pad(p, PI_PAD_B1);
             if ((iVar6 != 0) && (g_player[p].fire_wait == 0)) {
               player_fire(p);
             }
-            iVar6 = pjoy(p)->b[2];
+            iVar6 = pin_pad(p, PI_PAD_B3);
             if (((iVar6 != 0) && (g_player[p].special_time == 0)) && (g_player[p].specials != 0)) {
               use_special(p);
             }
-            if (((pkey(p, PK_SPECIAL) != 0) && (g_player[p].special_time == 0)) &&
+            if (((pin_key(p, PK_SPECIAL) != 0) && (g_player[p].special_time == 0)) &&
                (g_player[p].specials != 0)) {
               use_special(p);
             }
           }
           else if (g_player[p].control == '\x02') {
-            iVar6 = mouse_x;
-            iVar1 = mouse_y;
-            iVar2 = mouse_b;
+            iVar6 = pin_mouse_x(p);
+            iVar1 = pin_mouse_y(p);
+            iVar2 = pin_mouse_b(p);
             if (iVar4 + iVar1 < g_player[p].y) {
               g_player[p].vy--;
             }
@@ -1335,50 +1335,50 @@ void play_game(void)
             }
           }
           else {
-            if (pkey(p, PK_UP) != 0) {
+            if (pin_key(p, PK_UP) != 0) {
               g_player[p].vy--;
             }
-            if (pkey(p, PK_DOWN) != 0) {
+            if (pin_key(p, PK_DOWN) != 0) {
               g_player[p].vy++;
             }
-            if (pkey(p, PK_LEFT) != 0) {
+            if (pin_key(p, PK_LEFT) != 0) {
               g_player[p].vx--;
             }
-            if (pkey(p, PK_RIGHT) != 0) {
+            if (pin_key(p, PK_RIGHT) != 0) {
               g_player[p].vx++;
             }
-            if ((0 < g_player[p].vx) && (pkey(p, PK_RIGHT) == 0)) {
+            if ((0 < g_player[p].vx) && (pin_key(p, PK_RIGHT) == 0)) {
               g_player[p].vx--;
             }
-            if ((g_player[p].vx < 0) && (pkey(p, PK_LEFT) == 0)) {
+            if ((g_player[p].vx < 0) && (pin_key(p, PK_LEFT) == 0)) {
               g_player[p].vx++;
             }
-            if ((0 < g_player[p].vy) && (pkey(p, PK_DOWN) == 0)) {
+            if ((0 < g_player[p].vy) && (pin_key(p, PK_DOWN) == 0)) {
               g_player[p].vy--;
             }
-            if ((g_player[p].vy < 0) && (pkey(p, PK_UP) == 0)) {
+            if ((g_player[p].vy < 0) && (pin_key(p, PK_UP) == 0)) {
               g_player[p].vy++;
             }
-            if (((pkey(p, PK_SELECT) != 0) && (-1 < g_player[p].powerup)) &&
+            if (((pin_key(p, PK_SELECT) != 0) && (-1 < g_player[p].powerup)) &&
                (g_player[p].select_held == 0)) {
               buy_powerup(p);
             }
-            if (pkey(p, PK_SELECT) == 0) {
+            if (pin_key(p, PK_SELECT) == 0) {
               g_player[p].select_held = 0;
             }
-            if ((pkey(p, PK_FIRE) == 0) && (g_player[p].charge != 0)) {
+            if ((pin_key(p, PK_FIRE) == 0) && (g_player[p].charge != 0)) {
               player_fire(p);
             }
-            if (pkey(p, PK_FIRE) == 0) {
+            if (pin_key(p, PK_FIRE) == 0) {
               g_player[p].fire_wait = 0;
             }
-            if ((pkey(p, PK_FIRE) != 0) && (g_player[p].buildup != 0)) {
+            if ((pin_key(p, PK_FIRE) != 0) && (g_player[p].buildup != 0)) {
               g_player[p].charge_tick = (unsigned int)g_player[p].buildup + g_player[p].charge_tick;
             }
-            if ((pkey(p, PK_FIRE) != 0) && (g_player[p].fire_wait == 0)) {
+            if ((pin_key(p, PK_FIRE) != 0) && (g_player[p].fire_wait == 0)) {
               player_fire(p);
             }
-            if (((pkey(p, PK_SPECIAL) != 0) && (g_player[p].special_time == 0)) &&
+            if (((pin_key(p, PK_SPECIAL) != 0) && (g_player[p].special_time == 0)) &&
                (g_player[p].specials != 0)) {
               use_special(p);
             }

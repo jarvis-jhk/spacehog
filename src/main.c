@@ -27,6 +27,7 @@ static void usage(void)
           "  --music fm|gm     fm: original FM music (default); gm: General MIDI via a SoundFont\n"
           "  --soundfont FILE  .sf2 for --music gm (default: first *.sf2 in the data/save dir)\n"
           "  (both can also be set in spacehog.ini in the save dir: music = gm, soundfont = FILE)\n"
+          "  --input-latch     read player input once per tick (lockstep; not the original's timing)\n"
           "  --sync-log FILE   write the differential-test sync log (re/refemu)\n"
           "  --sync-dump A[-B] include full canonical state for records A..B\n");
 }
@@ -86,6 +87,7 @@ int main(int argc, char **argv)
       else if (!strcmp(a, "--max-seconds") && next) { sys_cfg.exit_after_ticks = atol(next); i++; }
       else if (!strcmp(a, "--soundfont") && next) { sys_cfg.soundfont = next; sys_cfg.music_gm = 1; i++; }
       else if (!strcmp(a, "--music") && next) { sys_cfg.music_gm = !strcmp(next, "gm"); i++; }
+      else if (!strcmp(a, "--input-latch")) player_input_latched = 1;
       else if (!strcmp(a, "--sync-log") && next) { sync_log = next; i++; }
       else if (!strcmp(a, "--sync-dump") && next) { sync_dump = next; i++; }
       else if (!strcmp(a, "--help") || !strcmp(a, "-h")) { usage(); return 0; }

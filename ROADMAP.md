@@ -15,8 +15,8 @@ listed in `PLAN.md` and pinned by the differential tests.
    SDL3 with X11 + Wayland) and Windows x86_64 on every push; `v*` tags publish
    `spacehog-linux-x86_64.tar.gz`, `spacehog-windows-x86_64.zip` and `SHA256SUMS`.
    0.1.1 is the first release built this way.
-2. **Per-tick input layer** — one `player_input(p)` bitmask per player, latched at the
-   tick wait; the base for netplay, 4 players and replays of scored runs. Difftest-pinned.
+2. ~~**Per-tick input layer**~~ — done in 0.1.2: `player_input(p)` (`src/game/pinput.c`),
+   live by default (difftest-pinned), `--input-latch` = once per tick at the tick wait.
 3. **Online co-op over Warpzone rooms** — deterministic lockstep with input delay,
    2 players first; per-tick `sync_state` hash to detect desyncs; `--warpzone-host`,
    `--warpzone-join ROOM`, then raise the descriptor's tier and add `host`/`join`.

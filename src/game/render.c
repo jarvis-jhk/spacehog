@@ -495,8 +495,8 @@ void render_frame(void)
       }
       if (g_player[local_4].warp_in == 0) {
         iVar3 = local_4 * 6 + 0x24;
-        if (((g_player[local_4].control == CTRL_PAD) && (iVar4 = pjoy(local_4)->right, iVar4 != 0)) ||
-           (pkey(local_4, PK_RIGHT) != 0)) {
+        if (((g_player[local_4].control == CTRL_PAD) && (iVar4 = pin_pad(local_4, PI_PAD_RIGHT), iVar4 != 0)) ||
+           (pin_key(local_4, PK_RIGHT) != 0)) {
           draw_rle_sprite(bmp_buf,dat_spacehog[iVar3 + (unsigned int)g_player[local_4].flame * 2].dat,
                           g_player[local_4].x + g_player[local_4].ship.flame_x,
                           g_player[local_4].y + g_player[local_4].ship.flame_y);
@@ -583,8 +583,8 @@ void render_frame(void)
     }
   }
   if (mouse_used != 0) {
-    iVar4 = mouse_y;
-    iVar3 = mouse_x;
+    iVar4 = pin_mouse_y(g_player[1].control == CTRL_MOUSE);
+    iVar3 = pin_mouse_x(g_player[1].control == CTRL_MOUSE);
     draw_rle_sprite(bmp_buf,dat_spacehog[g_anim[3] + 0x5c].dat,iVar3 + -2,view_y + -2 + iVar4)
     ;
   }

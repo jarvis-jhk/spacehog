@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2
+
+- All player input (keys, gamepads, mouse) goes through one per-player input layer,
+  the base for online play, 4 players and replays of scored runs. The game plays
+  exactly as before (verified against the original); `--input-latch` reads input once
+  per game tick, as lockstep netplay will.
+
 ## 0.1.1
 
 - Linux build made on an older base: runs on distributions with glibc 2.35 or newer

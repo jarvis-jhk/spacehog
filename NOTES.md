@@ -2,6 +2,18 @@
 
 Working log for things Jan does not need to see. Newest first.
 
+## 2026-10-17 — per-tick player input (roadmap `spacehog-per-tick-player-input`)
+
+- `src/game/pinput.c`: every per-player device read in game.c/render.c (keys via g_keys,
+  pjoy, mouse_b/x/y, Enter in ship select) goes through `player_input(p)`. Default = live
+  sample at each read → same read points as the original; regress.sh bit-exact (now 11
+  runs: added `mouse`, player 2 on mouse control).
+- `--input-latch`: latched once per tick in `wait_tick()`; deterministic (two replays →
+  identical sync logs), intentionally not original-timed (not difftestable).
+- Not in the layer (system keys): Esc, pause, screenshot, console, cheats, menus — for
+  netplay (next item) pause/quit must become shared tick events.
+- Open test for Jan (not a block): play 0.1.2 with keyboard + pad as usual.
+
 ## 2026-10-16 — takeover
 
 - Lane `spacehog` taken over at laptop HEAD ce8554c. Worker toolchain: `tools/venv-worker`

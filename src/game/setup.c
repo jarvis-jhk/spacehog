@@ -44,6 +44,7 @@ static void game_timer(void)
 void wait_tick(void)
 {
    sys_idle();
+   player_input_latch();
 }
 
 static void con_flush(void)
