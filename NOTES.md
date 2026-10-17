@@ -13,6 +13,10 @@ Working log for things Jan does not need to see. Newest first.
 - Not in the layer (system keys): Esc, pause, screenshot, console, cheats, menus — for
   netplay (next item) pause/quit must become shared tick events.
 - Open test for Jan (not a block): play 0.1.2 with keyboard + pad as usual.
+- v0.1.2 released (prerelease) from CI: 3 assets HTTP 200 with expected sizes, SHA256SUMS OK,
+  released Linux binary writes the same sync log as the regress-tested build. Item closed.
+  (Creating the release via the API with `tag_name` + `target_commitish` makes the tag and
+  triggers release.yml; no separate tag push needed.)
 
 ## 2026-10-16 — takeover
 
