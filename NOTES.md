@@ -27,6 +27,9 @@ Working log for things Jan does not need to see. Newest first.
   removed until implemented — PR to jarvis-jhk/warpzone (🌀 lane merges).
 - Later: in-game room list and username prompt (now: launcher identity or
   `--warpzone-name`), 4 players, fault reports for desyncs.
+- v0.2.0 released (prerelease) from CI: 3 assets HTTP 200 with expected sizes, SHA256SUMS OK,
+  the released Linux binary passes `re/net/nettest.sh` (seed 31). Item closed. Asked the
+  warpzone lane (t_mvbq58qs35wt4z) to merge/deploy descriptor PR jarvis-jhk/warpzone#13.
 
 ## 2026-10-17 — per-tick player input (roadmap `spacehog-per-tick-player-input`)
 
