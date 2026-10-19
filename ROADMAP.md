@@ -37,11 +37,34 @@ listed in `PLAN.md` and pinned by the differential tests.
    dir, the next start sends it with `wz_report_problem(NULL, "spacehog", VERSION,
    "crash", …)` and deletes it. Stable titles, no personal data. Waiting for the 0.1.3
    release (launcher-started crashes are already reported by Warpzone itself).
+9. **macOS support** (`spacehog-macos-support`) — a macOS build, universal (arm64 +
+   x86_64, `CMAKE_OSX_ARCHITECTURES`) or one per arch, built and smoke-tested on a GitHub
+   `macos-*` runner in `ci.yml` (headless start, `--version`, a short replay/demo run),
+   and on `v*` tags `spacehog-macos-universal.tar.gz` (or `.zip`/`.app`) in the release
+   and `SHA256SUMS`. Install/start notes for macOS in the player docs (README). Unsigned
+   is fine: document the Gatekeeper workaround (right-click → Open, or
+   `xattr -dr com.apple.quarantine`). Known risks:
+   - **Graphics**: we only use `SDL_Renderer` (no OpenGL), so SDL3 picks Metal; check
+     the integer scaling / palette upload and HiDPI (window vs pixel size) on Retina.
+   - **SDL3**: static build for macOS with Cocoa + Metal (+ IOKit/GameController
+     frameworks), minimum deployment target set explicitly (e.g. 11.0).
+   - **Controllers**: macOS pads go through GameController.framework/IOKit HID; check
+     mapping and hot-plug, the Xbox/PS pad button labels and that `player_input(p)`
+     stays deterministic.
+   - **File paths**: `SDL_GetBasePath` points into `Contents/Resources` in an `.app`;
+     game data and saves must go to `SDL_GetPrefPath` (`~/Library/Application Support`),
+     never next to the binary (read-only / App Translocation when unsigned).
+   - **Warpzone client**: there is no macOS libwarpzone yet (0.1.2: Linux, Windows only)
+     — needs a macOS (universal) release from the warpzone lane, and the launcher must
+     know a macOS artifact; until then a macOS build without online co-op.
+   - **Crash reports** (item 8): signal handler + backtrace work as on Linux, but
+     `backtrace()` symbols need the dSYM / `atos`.
+   - Differential tests (`re/refemu`) stay on Linux; the macOS job only checks that the
+     same recording replays to the same `sync_state` CRC as on Linux.
 
 ## Later
 
 - Clean-up of the translation (local variable names, Ghidra-isms) — `PLAN.md` item 9.
-- macOS build (needs a Mac or an SDK that may legally be used).
 - Rollback netplay on top of the state snapshot.
 
 ## Not planned
