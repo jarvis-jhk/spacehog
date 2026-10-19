@@ -2,6 +2,15 @@
 
 Working log for things Jan does not need to see. Newest first.
 
+## 2026-10-19 — reminder t_mveys7wp0v1et (Johan Peitz source request)
+
+- Scheduled reminder from 2026-10-12 (t_mv5fenaodpf90): ask Jan whether Johan Peitz answered
+  his email about the Operation Spacehog source. Obsolete as a "start the project?" question:
+  the lane/repo exist and the port is at v0.2.0 (online co-op). Not sent to Jan (lane is
+  releases-only; schedule-originated requests may not message him).
+- If Johan ever sends the source, it is useful as a cross-check for the decompilation
+  (re/refemu), not a restart. Jan can mention it in a Signal message to the lane.
+
 ## 2026-10-17 — Warpzone fault reports (request t_mvc4357ndehku, from the warpzone lane)
 
 - Valid and wanted (= roadmap item 8), but blocked: needs libwarpzone 0.1.3 (wz_report /
