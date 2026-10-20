@@ -36,6 +36,10 @@ Working log for things Jan does not need to see. Newest first.
   session recording differed in the last record — when a replay runs out, live pads
   (none) released what the replay held. Live pads now apply on physical changes only.
 - regress.sh caps parallel runs at the cgroup CPU quota (8 here): 2m25s, no false stalls.
+- **v0.3.0 released** (prerelease) from CI on green main: 4 assets (linux, windows,
+  macos-universal, SHA256SUMS) HTTP 200 with the expected sizes, SHA256SUMS OK, the
+  released Linux binary passes `scripts/ci-replay-check.sh`. Combined roadmap:
+  `spacehog-macos-support` marked done; added `spacehog-macos-online-co-op`.
 
 ## 2026-10-19 — reminder t_mveys7wp0v1et (Johan Peitz source request)
 
