@@ -57,7 +57,7 @@ if [ "$OS" = macos ]; then
    case " $archs " in *" x86_64 "*) ;; *) echo "no x86_64 slice" >&2; exit 1 ;; esac
    # only system libraries and frameworks (SDL3 is static)
    otool -L "$B"
-   if otool -L "$B" | tail -n +2 | grep -v -e '^[[:space:]]*/usr/lib/' -e '^[[:space:]]*/System/Library/'; then
+   if otool -L "$B" | grep '^[[:space:]]' | grep -v -e '^[[:space:]]*/usr/lib/' -e '^[[:space:]]*/System/Library/'; then
       echo "links a non-system library" >&2; exit 1
    fi
    for a in arm64 x86_64; do
