@@ -11,7 +11,7 @@ find_package(SDL3 REQUIRED CONFIG)
 
 file(GLOB COMPAT_SRC src/compat/*.c)
 file(GLOB GAME_SRC src/game/*.c)
-add_executable(spacehog src/main.c src/platform/sys.c src/platform/net.c ${COMPAT_SRC} ${GAME_SRC} src/third_party/nuked_opl3/opl3.c)
+add_executable(spacehog src/main.c src/platform/sys.c src/platform/net.c src/platform/report.c ${COMPAT_SRC} ${GAME_SRC} src/third_party/nuked_opl3/opl3.c)
 target_include_directories(spacehog PRIVATE src)
 target_link_libraries(spacehog PRIVATE SDL3::SDL3-static)
 set(SPACEHOG_VERSION "dev" CACHE STRING "version string (release tag)")

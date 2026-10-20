@@ -2,6 +2,9 @@
  * Translated from SH.EXE 0x4130-0x6400 and 0x27ce8. */
 #include "sh.h"
 #include "../compat/internal.h"
+#include "../platform/report.h"
+#include "../platform/sys.h"
+#include <stdlib.h>
 #include <time.h>
 
 DATAFILE *dat_spacehog, *dat_shlev, *dat_shbgs, *dat_shsnd;
@@ -145,6 +148,19 @@ void gen_missiles(void)
    destroy_bitmap(bmp);
 }
 
+/* a data file that is there but cannot be read is a fault worth reporting (another
+   release of the game, a damaged download); a missing one is not */
+static void report_bad_datafile(const char *name)
+{
+   size_t n = 0;
+   uint8_t *raw = sys_read_file(name, &n);
+   if (raw)
+      report_fault("data file not readable", "%s, %lu bytes, starts %02x %02x %02x %02x\n", name,
+                   (unsigned long)n, n > 0 ? raw[0] : 0, n > 1 ? raw[1] : 0, n > 2 ? raw[2] : 0,
+                   n > 3 ? raw[3] : 0);
+   free(raw);
+}
+
 /* 0x4930 */
 void load_datafiles(void)
 {
@@ -152,6 +168,7 @@ void load_datafiles(void)
    con_flush();
    dat_spacehog = load_datafile("spacehog.dat");
    if (!dat_spacehog) {
+      report_bad_datafile("SPACEHOG.DAT");
       allegro_exit();
       sys_error_box("Cannot load SPACEHOG.DAT.\n\nPut the original game files (SPACEHOG.DAT, SHLEV.DAT, SHBGS.DAT, SHSND.DAT) next to the program or in the current directory, or start it with --data DIR.");
       exit(1);
@@ -160,6 +177,7 @@ void load_datafiles(void)
    con_flush();
    dat_shlev = load_datafile("shlev.dat");
    if (!dat_shlev) {
+      report_bad_datafile("SHLEV.DAT");
       allegro_exit();
       sys_error_box("Cannot load SHLEV.DAT. Please copy all original game files.");
       exit(1);
@@ -168,6 +186,7 @@ void load_datafiles(void)
    con_flush();
    dat_shbgs = load_datafile("shbgs.dat");
    if (!dat_shbgs) {
+      report_bad_datafile("SHBGS.DAT");
       allegro_exit();
       sys_error_box("Cannot load SHBGS.DAT. Please copy all original game files.");
       exit(1);
@@ -176,6 +195,7 @@ void load_datafiles(void)
    con_flush();
    dat_shsnd = load_datafile("shsnd.dat");
    if (!dat_shsnd) {
+      report_bad_datafile("SHSND.DAT");
       allegro_exit();
       sys_error_box("Cannot load SHSND.DAT. Please copy all original game files.");
       exit(1);
@@ -259,8 +279,10 @@ void load_saved(void)
       return;
    }
    memset(b, 0, sizeof(b));
-   if (fread(b, 1, sizeof(b), f) != sizeof(b))
+   if ((i = (int)fread(b, 1, sizeof(b), f)) != (int)sizeof(b)) {
       sys_log("SPACEHOG.SAV is short; missing values are zero");
+      report_fault("SPACEHOG.SAV is short", "%d of %d bytes\n", i, (int)sizeof(b));
+   }
    fclose(f);
    for (i = 0; i < 10; i++) {
       memcpy(g_hiscore[i].name, b + i * 28, 20);

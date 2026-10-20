@@ -1,6 +1,7 @@
 /* Online co-op over Warpzone rooms (see net.h): session setup and frame transport. */
 #include "net.h"
 #include "sys.h"
+#include "report.h"
 #include "../compat/internal.h"
 #include <SDL3/SDL.h>
 #include <stdio.h>
@@ -43,6 +44,11 @@ void net_local_hash(uint32_t frame, uint32_t hash)
 }
 void net_shutdown(void)
 {
+}
+int net_report(const char *kind, const char *title, const char *detail)
+{
+   (void)kind; (void)title; (void)detail;
+   return 0;
 }
 
 #else
@@ -478,7 +484,13 @@ static int host_session(int argc, char **argv, uint32_t *seed)
    msg[0] = M_END;
    send_msg(msg, 1);
    status(1, "Starting with %s ...", partner);
-   return wait_for(&got_ready, 30);
+   if (wait_for(&got_ready, 30) != 0) {
+      if (!refused && !sys_quit_requested && have_peer)
+         report_fault("netplay: the guest never got ready", "host, input delay %d, save %ld bytes\n",
+                      net_delay, savn);
+      return -1;
+   }
+   return 0;
 }
 
 static int guest_session(int *argc, char ***argv, uint32_t *seed)
@@ -494,8 +506,12 @@ static int guest_session(int *argc, char ***argv, uint32_t *seed)
    wr32(msg + 1, NET_PROTO);
    wr32(msg + 5, data_hash());
    send_msg(msg, 9);
-   if (wait_for(&start_done, 60) != 0)
+   if (wait_for(&start_done, 60) != 0) {
+      if (!refused && !sys_quit_requested)
+         report_fault(have_peer ? "netplay: no start from the host" : "netplay: no connection to the host",
+                      "guest, joined the room, %s\n", have_peer ? "connected" : "peer never connected");
       return -1;
+   }
    *seed = start_seed;
    net_delay = start_delay;
    /* play on the host's SPACEHOG.SAV, kept apart from this player's own */
@@ -667,6 +683,10 @@ void net_local_hash(uint32_t frame, uint32_t hash)
             desynced = 1;
             sys_log("netplay: DESYNC at frame %u (state %08x here, %08x at the partner)",
                     lhash[i].frame, lhash[i].hash, rhash[i].hash);
+            report_fault("netplay: out of sync",
+                         "%s, frame %u, state %08x here, %08x at the partner, input delay %d, protocol %d\n",
+                         net_me ? "guest" : "host", lhash[i].frame, lhash[i].hash, rhash[i].hash,
+                         net_delay, NET_PROTO);
             {
                char m[64];
                snprintf(m, sizeof(m), "out of sync with %.40s", partner[0] ? partner : "partner");
@@ -697,6 +717,14 @@ void net_shutdown(void)
    wz_destroy(wz);
    wz = NULL;
    net_active = 0;
+}
+
+int net_report(const char *kind, const char *title, const char *detail)
+{
+   if (!wz)
+      return 0;
+   wz_report(wz, kind, title, detail);
+   return 1;
 }
 
 #endif

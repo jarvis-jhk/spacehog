@@ -49,5 +49,7 @@ void net_send_frame(uint32_t frame, const NetEvent *ev, int n, uint32_t hash_fra
 int net_get_frame(uint32_t frame, NetEvent *ev, int max);
 void net_local_hash(uint32_t frame, uint32_t hash);
 void net_shutdown(void);
+/* send a fault report with the session's Warpzone client (report.c); 0 = no client */
+int net_report(const char *kind, const char *title, const char *detail);
 
 #endif

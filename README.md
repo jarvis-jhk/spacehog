@@ -91,6 +91,17 @@ whole game state is compared twice a second ("out of sync" would show if they ev
 differed). If the partner leaves, the game goes on with the remaining player.
 `--record FILE` on either side writes the session as an ordinary replay.
 
+## Fault reports
+
+If the game crashes, or something fails that should not (a data file that is there but
+cannot be read, a damaged `SPACEHOG.SAV`, an online game that goes out of sync or never
+starts), it sends a short report to the Warpzone server (the same one as for online play)
+so it can be fixed. A crash is written to `crash-report.txt` in the save directory and
+sent at the next start. Reports contain the game version, the operating system and
+addresses inside the program — no names, paths or other personal data. Set
+`SPACEHOG_NO_REPORTS=1` to turn them off. Builds without Warpzone (macOS for now) send
+nothing.
+
 ## Building
 
 Needs CMake ≥ 3.20, a C11 compiler and SDL 3 (linked statically).

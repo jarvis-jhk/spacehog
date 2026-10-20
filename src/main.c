@@ -7,6 +7,7 @@
 #include "game/synclog.h"
 #include "game/sh.h"
 #include "platform/net.h"
+#include "platform/report.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -130,6 +131,7 @@ int main(int argc, char **argv)
       net_cfg.requested = net_cfg.host = 1;
    if (sys_init() != 0)
       return 1;
+   report_init();
    if (net_cfg.requested) {
       uint32_t seed;
       int nargc = game_argc;

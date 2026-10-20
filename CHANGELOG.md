@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.0
+
+- **macOS**: `spacehog-macos-universal.tar.gz`, one program for Apple Silicon and Intel
+  Macs (macOS 11 or newer). Not signed by Apple: see the README for the one-time
+  Gatekeeper step. Online co-op is not in the macOS build yet.
+- **Fault reports**: when the game crashes, or something fails that should not (a data
+  file that is there but cannot be read, a damaged `SPACEHOG.SAV`, an online game that
+  goes out of sync or never starts), it sends a short report to Warpzone, so it can be
+  fixed. A crash is sent at the next start. Reports hold the version, the system and
+  program addresses, nothing personal; `SPACEHOG_NO_REPORTS=1` turns them off.
+- Every build is checked in CI: it must replay recorded games to exactly the same
+  frames and game state as the build verified against the original (Linux, and macOS
+  on both Apple Silicon and Intel).
+- A replay that ends keeps the gamepad state it ended with (a session's recording now
+  replays offline identically to its last frame).
+- `--version`. Warpzone client library 0.1.10.
+
 ## 0.2.0
 
 - **Online co-op over Warpzone**: two players on two machines play together.
