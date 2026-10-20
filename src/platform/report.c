@@ -25,7 +25,11 @@
 #include <execinfo.h>
 #include <fcntl.h>
 #include <signal.h>
+#ifdef __APPLE__
+#include <sys/ucontext.h>             /* <ucontext.h> wants _XOPEN_SOURCE there */
+#else
 #include <ucontext.h>
+#endif
 #include <unistd.h>
 #endif
 
