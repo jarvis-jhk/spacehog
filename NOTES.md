@@ -2,6 +2,41 @@
 
 Working log for things Jan does not need to see. Newest first.
 
+## 2026-10-20 — macOS, fault reports, libwarpzone 0.1.10 (request t_mvg3i3e7twx87)
+
+- GitHub: no open issues/PRs. The only event was a failed CI run on my own `macos-ci`
+  branch (t_mvg40kb0xw9hm): otool's "(architecture …)" header lines tripped the linkage
+  check; fixed in e065c3a, CI green.
+- **Upstream check (2026-10-20)**: libwarpzone v0.1.2 → **v0.1.10** adopted (header
+  only gained `wz_adopt_identity` and `wz_report`/`wz_report_problem`; regress.sh,
+  nettest seeds 41–45, 51–53 incl. --pad/--realtime green; nettest server 0.1.10).
+  Not adopted: `wz_adopt_identity` (Android launcher only). Already current: SDL
+  release-3.4.18, llvm-mingw 20261006, Nuked-OPL3 765ec962e4 (2026-08-24) and
+  TinySoundFont 853a0a1717 (2026-07-19) — vendored files byte-identical to upstream HEAD.
+  No macOS libwarpzone yet (0.1.10: Linux x86_64/aarch64, Windows gnu/msvc).
+- **macOS** (combined roadmap `spacehog-macos-support`): universal binary from
+  `macos-14` (`scripts/ci-build.sh macos`): static SDL3, minos 11.0 both slices,
+  system-only linkage, ad hoc signed after strip. No online co-op (no libwarpzone):
+  asked the warpzone lane (t_mvg3xqsgvasri) for a macOS libwarpzone + `macos` platform
+  in descriptors. Not verified: a real Mac (window/HiDPI, pads, Gatekeeper flow) — no
+  hardware; the CI runner only runs it headless.
+- **CI replay check** (`scripts/ci-replay-check.sh`, `re/refemu/replays/sync.sha256`):
+  every Linux and macOS build (arm64 and x86_64 via Rosetta) must replay `short.rec` and
+  `fullgame_judge.rec` to the sync-log hashes of the regress-tested build-w. Game data:
+  `https://image.dosgamesarchive.com/games/sh_dos.zip` (sha256 4e3b15c2…; its inner
+  spacehog.zip = orig/dist/spacehog.zip), downloaded in CI, never packed/uploaded. When
+  game behaviour changes on purpose: `REPLAY_CHECK_UPDATE=1 scripts/ci-replay-check.sh
+  build-w/spacehog` after regress.sh.
+- **Fault reports** (ROADMAP 8) via Warpzone's feedback API, not the JARVIS report URL
+  (that one is secret and this repo is public; Warpzone's server forwards fault reports).
+  `re/net/reporttest.sh` checks data/SAV/crash reports land in a local server's
+  `feedback` table without paths. Desync and "session never starts" reports are wired
+  but not provoked by a test.
+- Found by nettest seed 42 --pad (pre-existing, also with 0.1.2): an offline replay of a
+  session recording differed in the last record — when a replay runs out, live pads
+  (none) released what the replay held. Live pads now apply on physical changes only.
+- regress.sh caps parallel runs at the cgroup CPU quota (8 here): 2m25s, no false stalls.
+
 ## 2026-10-19 — reminder t_mveys7wp0v1et (Johan Peitz source request)
 
 - Scheduled reminder from 2026-10-12 (t_mv5fenaodpf90): ask Jan whether Johan Peitz answered

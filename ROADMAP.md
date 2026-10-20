@@ -30,14 +30,19 @@ listed in `PLAN.md` and pinned by the differential tests.
    WAV, MID, `.lev`), later the ship/enemy tables as text. Warpzone archive categories:
    level, graphics, ship, sound, music, campaign. No code in mods.
 7. **Steam Deck** — fullscreen and pad defaults when `SteamDeck=1`.
-8. **Fault reports** through Warpzone's feedback API (libwarpzone ≥ 0.1.3, game id
-   `spacehog`): caught faults (failed data load, corrupt save/recording, net desync,
-   failed join) via `wz_report(wz, "bug", stable title, detail)`; crashes: the signal
-   handler / `SetUnhandledExceptionFilter` writes title + backtrace to a file in the save
-   dir, the next start sends it with `wz_report_problem(NULL, "spacehog", VERSION,
-   "crash", …)` and deletes it. Stable titles, no personal data. Waiting for the 0.1.3
-   release (launcher-started crashes are already reported by Warpzone itself).
-9. **macOS support** (`spacehog-macos-support`) — a macOS build, universal (arm64 +
+8. ~~**Fault reports**~~ — done in 0.3.0 (`src/platform/report.c`, libwarpzone 0.1.10):
+   caught faults (data file present but unreadable, short `SPACEHOG.SAV`, net desync,
+   session that never starts) via `wz_report` / `wz_report_problem`; crashes: the signal
+   handler / unhandled exception filter writes `crash-report.txt` in the save dir, the
+   next start sends it and deletes it. Stable titles, no personal data; off for
+   `--headless`/dev builds; tested by `re/net/reporttest.sh`.
+9. ~~**macOS support**~~ (`spacehog-macos-support`) — done in 0.3.0:
+   `spacehog-macos-universal.tar.gz` (arm64 + x86_64, macOS 11+), built on `macos-14` in
+   CI, both slices replay `re/refemu/replays` to the Linux reference sync logs
+   (`scripts/ci-replay-check.sh`), README section with the Gatekeeper workaround.
+   Still open: **online co-op on macOS** needs a macOS libwarpzone (asked the warpzone
+   lane, 2026-10-20) and a `macos` asset in the Warpzone descriptor. Original plan:
+   a macOS build, universal (arm64 +
    x86_64, `CMAKE_OSX_ARCHITECTURES`) or one per arch, built and smoke-tested on a GitHub
    `macos-*` runner in `ci.yml` (headless start, `--version`, a short replay/demo run),
    and on `v*` tags `spacehog-macos-universal.tar.gz` (or `.zip`/`.app`) in the release
