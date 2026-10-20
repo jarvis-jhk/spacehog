@@ -40,8 +40,9 @@ listed in `PLAN.md` and pinned by the differential tests.
    `spacehog-macos-universal.tar.gz` (arm64 + x86_64, macOS 11+), built on `macos-14` in
    CI, both slices replay `re/refemu/replays` to the Linux reference sync logs
    (`scripts/ci-replay-check.sh`), README section with the Gatekeeper workaround.
-   Still open: **online co-op on macOS** needs a macOS libwarpzone (asked the warpzone
-   lane, 2026-10-20) and a `macos` asset in the Warpzone descriptor. Original plan:
+   **Online co-op on macOS** (`spacehog-macos-online-co-op`): built in after 0.3.0 with
+   libwarpzone 0.1.11 (universal-apple-darwin package); the Warpzone descriptor knows the
+   `macos` asset `spacehog-macos-universal.tar.gz` / `spacehog/spacehog`. Original plan:
    a macOS build, universal (arm64 +
    x86_64, `CMAKE_OSX_ARCHITECTURES`) or one per arch, built and smoke-tested on a GitHub
    `macos-*` runner in `ci.yml` (headless start, `--version`, a short replay/demo run),

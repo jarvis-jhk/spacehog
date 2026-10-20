@@ -4,7 +4,7 @@
 #            glibc of the build base (2.35) is the floor.
 #   windows: cross-built with llvm-mingw.
 #   macos:   universal binary (arm64 + x86_64), macOS 11+, on a GitHub macos runner;
-#            no online co-op yet (there is no macOS libwarpzone).
+#            online co-op with the universal libwarpzone package.
 # usage: scripts/ci-build.sh linux|windows|macos VERSION
 set -e
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
@@ -36,8 +36,7 @@ if [ ! -f "$PREFIX/.done-$SDL_VER" ]; then
    cmake --install "$DL/build-sdl3-$OS"
    touch "$PREFIX/.done-$SDL_VER"
 fi
-WZ=
-[ "$OS" = macos ] || WZ=$("$ROOT/scripts/fetch-warpzone.sh" "$OS" "$DL/warpzone")
+WZ=$("$ROOT/scripts/fetch-warpzone.sh" "$OS" "$DL/warpzone")
 GAMEOPT=(-G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$PREFIX" -DWARPZONE_DIR="$WZ" -DSPACEHOG_VERSION="${VER#v}")
 [ "$OS" = windows ] && GAMEOPT+=(-DCMAKE_TOOLCHAIN_FILE="$ROOT/cmake/mingw-w64-x86_64.cmake")
 [ "$OS" = macos ] && GAMEOPT+=("${MACOPT[@]}")

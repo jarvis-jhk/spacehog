@@ -39,8 +39,8 @@ folder, then either
 Then double-click `spacehog` (it opens a Terminal window next to the game) or start it in
 Terminal with `./spacehog`. Settings and high scores go to `SPACEHOG.SAV` next to the data,
 or to `~/Library/Application Support/FreeLunchDesign/Spacehog/` if that folder is not
-writable. Gamepads (Xbox, PlayStation, MFi) work as on the other systems. Online co-op is
-not in the macOS build yet (the Warpzone client library has no macOS release so far).
+writable. Gamepads (Xbox, PlayStation, MFi) work as on the other systems, and so does
+online co-op over Warpzone (the macOS Warpzone launcher installs and starts it, too).
 
 ## Playing
 
@@ -99,8 +99,7 @@ starts), it sends a short report to the Warpzone server (the same one as for onl
 so it can be fixed. A crash is written to `crash-report.txt` in the save directory and
 sent at the next start. Reports contain the game version, the operating system and
 addresses inside the program — no names, paths or other personal data. Set
-`SPACEHOG_NO_REPORTS=1` to turn them off. Builds without Warpzone (macOS for now) send
-nothing.
+`SPACEHOG_NO_REPORTS=1` to turn them off. Builds without Warpzone send nothing.
 
 ## Building
 

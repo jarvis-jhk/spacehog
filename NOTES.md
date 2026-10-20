@@ -2,6 +2,17 @@
 
 Working log for things Jan does not need to see. Newest first.
 
+## 2026-10-20 — libwarpzone 0.1.11, online co-op on macOS (t_mvg5dyxh10cwfq, warpzone lane)
+
+- Adopted libwarpzone **0.1.11** on all three systems (`scripts/fetch-warpzone.sh linux|
+  windows|macos`; checksum with `shasum -a 256`, which both runners have). Header is
+  byte-identical to 0.1.10, no source changes. macOS links `libwarpzone.a -liconv -lm`
+  (NATIVE_LIBS.txt; `-lSystem -lc` are implicit). nettest/reporttest server pinned to 0.1.11.
+- Linux build-w reconfigured on 0.1.11: regress.sh green, ci-replay-check ok, nettest
+  seeds 61, 62 --pad, 63 --realtime green, reporttest green.
+- macOS: only CI-built (link, both slices, replays); netplay itself not run on a Mac.
+  Descriptor (warpzone repo + live) already has the `macos` asset/exec matching pack.sh.
+
 ## 2026-10-20 — macOS, fault reports, libwarpzone 0.1.10 (request t_mvg3i3e7twx87)
 
 - GitHub: no open issues/PRs. The only event was a failed CI run on my own `macos-ci`

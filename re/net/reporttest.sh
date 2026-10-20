@@ -10,7 +10,7 @@ source "$ROOT/tools/env.sh"
 BIN=${NETTEST_BIN:-$SH_BUILD/spacehog}
 DATA=$ROOT/orig/dist/game
 OUT=$ROOT/scratch/reporttest; rm -rf "$OUT"; mkdir -p "$OUT"
-SRV=$ROOT/tools/warpzone/warpzone-server-0.1.10-x86_64-linux-musl
+SRV=$ROOT/tools/warpzone/warpzone-server-0.1.11-x86_64-linux-musl
 [ -x "$SRV" ] || { echo "run re/net/nettest.sh once (fetches the server)"; exit 2; }
 PORT=3517 UPORT=3518
 S=$OUT/srv; mkdir -p "$S/games" "$S/data"; touch "$S/staff.toml"

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- **Online co-op on macOS** (and fault reports there): the macOS build now carries the
+  Warpzone client, and the macOS Warpzone launcher can install and start it.
+- Warpzone client library 0.1.11.
+
 ## 0.3.0
 
 - **macOS**: `spacehog-macos-universal.tar.gz`, one program for Apple Silicon and Intel
