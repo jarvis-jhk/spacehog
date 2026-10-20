@@ -12,6 +12,12 @@ Working log for things Jan does not need to see. Newest first.
   seeds 61, 62 --pad, 63 --realtime green, reporttest green.
 - macOS: only CI-built (link, both slices, replays); netplay itself not run on a Mac.
   Descriptor (warpzone repo + live) already has the `macos` asset/exec matching pack.sh.
+- First macOS CI run with HAVE_WARPZONE failed (t_mvg5os1q14s9oo): report.c's `<ucontext.h>`
+  needs _XOPEN_SOURCE on macOS; now `<sys/ucontext.h>` there. CI green (all 3, both slices).
+- **v0.3.1 released** (prerelease) from CI: 4 assets OK, SHA256SUMS OK, layout unchanged
+  (`spacehog/spacehog`), released Linux binary passes ci-replay-check, `--version` 0.3.1.
+  Combined roadmap `spacehog-macos-online-co-op`: not marked done from this worker (no
+  roadmap API access here) — mark it done when possible.
 
 ## 2026-10-20 — macOS, fault reports, libwarpzone 0.1.10 (request t_mvg3i3e7twx87)
 
