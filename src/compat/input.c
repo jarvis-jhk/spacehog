@@ -466,11 +466,17 @@ void _input_tick_hook(void)
       }
       return;
    }
+   /* on changes of the physical pad only, like keys: after a replay ends, what it
+      held stays held (as in the session it was recorded from) until the pad moves */
    for (i = 0; i < MAX_PADS; i++) {
+      static int phys_bits[MAX_PADS];
       int bits = pad_bits(pads[i]);
-      if (bits != live_pad[i].bits) {
-         rec("j %d %d", i, bits);
-         set_pad_state(&live_pad[i], bits);
+      if (bits != phys_bits[i]) {
+         phys_bits[i] = bits;
+         if (bits != live_pad[i].bits) {
+            rec("j %d %d", i, bits);
+            set_pad_state(&live_pad[i], bits);
+         }
       }
    }
 }

@@ -1,7 +1,7 @@
 # Operation Spacehog — native port
 
 A native C port of **Operation Spacehog 1.01** (Free Lunch Design, 2000, DOS freeware) for
-Linux and Windows, rebuilt from a decompilation of the original `SH.EXE`. It plays like
+Linux, Windows and macOS, rebuilt from a decompilation of the original `SH.EXE`. It plays like
 the original — same logic, timing, graphics and sound — with modern extras: a resizable
 window, fullscreen, and gamepads for both players.
 
@@ -18,9 +18,29 @@ What comes next (4 players, mods, leaderboards): [ROADMAP.md](ROADMAP.md).
   installs and updates the game, finds the original data in your Downloads folder and
   hands it to the game, and adds it to Steam (Steam Deck included).
 - Or by hand from the [releases](https://github.com/jarvis-jhk/spacehog/releases):
-  `spacehog-linux-x86_64.tar.gz` (also for the Steam Deck) or
-  `spacehog-windows-x86_64.zip`. Copy the four `.DAT` files into the `spacehog` folder
-  next to the program, or point it at them with `--data`.
+  `spacehog-linux-x86_64.tar.gz` (also for the Steam Deck),
+  `spacehog-windows-x86_64.zip` or `spacehog-macos-universal.tar.gz` (macOS 11 or newer,
+  Apple Silicon and Intel). Copy the four `.DAT` files into the `spacehog` folder next to
+  the program, or point it at them with `--data`.
+
+### macOS
+
+The macOS build is not signed by Apple, so Gatekeeper refuses it at first ("cannot be
+opened" / "is damaged"). Unpack the archive (double-click it in Finder, or
+`tar xzf spacehog-macos-universal.tar.gz`), copy the `.DAT` files into the `spacehog`
+folder, then either
+
+- remove the download quarantine once in Terminal:
+  `xattr -dr com.apple.quarantine ~/Downloads/spacehog` (the folder where you unpacked it), or
+- Control-click (right-click) `spacehog` in Finder, choose **Open** and confirm **Open**
+  (on macOS 15 and newer: try to open it once, then *System Settings → Privacy & Security →
+  Open Anyway*).
+
+Then double-click `spacehog` (it opens a Terminal window next to the game) or start it in
+Terminal with `./spacehog`. Settings and high scores go to `SPACEHOG.SAV` next to the data,
+or to `~/Library/Application Support/FreeLunchDesign/Spacehog/` if that folder is not
+writable. Gamepads (Xbox, PlayStation, MFi) work as on the other systems. Online co-op is
+not in the macOS build yet (the Warpzone client library has no macOS release so far).
 
 ## Playing
 
@@ -83,7 +103,11 @@ downloads the pinned libwarpzone release (checksum-verified) and prints its fold
 it as `-DWARPZONE_DIR=...`. Without it the game builds without online play.
 
 Release archives are built by CI (`scripts/ci-build.sh`, on ubuntu-22.04 so the Linux
-binary runs with glibc 2.35 or newer); `scripts/package.sh` builds them locally into `dist/`.
+binary runs with glibc 2.35 or newer, and a universal macOS 11+ binary on a macOS runner);
+every CI build replays the recordings in `re/refemu/replays` and checks that it writes the
+same sync logs as the build verified against the original (`scripts/ci-replay-check.sh`;
+it downloads the freeware game data for that and never packs it). On macOS that runs for
+both the arm64 slice and the x86_64 slice (Rosetta). `scripts/package.sh` builds them locally into `dist/`.
 `tools/fetch.sh` and `tools/build-sdl3*.sh` set up a self-contained toolchain in `tools/`
 (static SDL3 for Linux, llvm-mingw + SDL3 for Windows; toolchain file
 `cmake/mingw-w64-x86_64.cmake`). Always `source tools/env.sh` first.

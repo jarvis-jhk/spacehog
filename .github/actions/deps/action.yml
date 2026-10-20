@@ -1,11 +1,15 @@
 name: Build dependencies
-description: apt packages, ninja and the cached SDL3/llvm-mingw downloads
+description: apt packages (brew on macOS), ninja and the cached SDL3/llvm-mingw downloads
 inputs:
   os: {required: true}
 runs:
   using: composite
   steps:
     - shell: bash
+      if: inputs.os == 'macos'
+      run: command -v ninja >/dev/null || brew install ninja
+    - shell: bash
+      if: inputs.os != 'macos'
       run: |
         sudo apt-get update -qq
         sudo apt-get install -y -qq ninja-build

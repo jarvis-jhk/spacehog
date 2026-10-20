@@ -11,10 +11,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef SPACEHOG_VERSION
+#define SPACEHOG_VERSION "dev"
+#endif
+
 static void usage(void)
 {
    printf("Operation Spacehog (native port)\n"
           "usage: spacehog [options] [/nosound] [/r_scores] [/r_keys]\n"
+          "  --version         print the version and exit\n"
           "  --data DIR        directory with SPACEHOG.DAT etc.\n"
           "  --save-dir DIR    where SPACEHOG.SAV is kept (default: data dir)\n"
           "  --scale N         initial window scale (default 3)\n"
@@ -108,6 +113,7 @@ int main(int argc, char **argv)
       else if (!strcmp(a, "--sync-log") && next) { sync_log = next; i++; }
       else if (!strcmp(a, "--sync-dump") && next) { sync_dump = next; i++; }
       else if (!strcmp(a, "--help") || !strcmp(a, "-h")) { usage(); return 0; }
+      else if (!strcmp(a, "--version")) { printf("spacehog %s\n", SPACEHOG_VERSION); return 0; }
       else if (!strcmp(a, "--render-midi") && i + 3 < argc) {
          sys_cfg.headless = 1;
          sys_init();

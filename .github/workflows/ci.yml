@@ -10,16 +10,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [linux, windows]
-    runs-on: ubuntu-22.04
+        include:
+          - {os: linux, runner: ubuntu-22.04, asset: linux-x86_64}
+          - {os: windows, runner: ubuntu-22.04, asset: windows-x86_64}
+          - {os: macos, runner: macos-14, asset: macos-universal}
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
       - uses: ./.github/actions/deps
         with: {os: '${{ matrix.os }}'}
       - run: scripts/ci-build.sh ${{ matrix.os }} "$(git describe --tags --always)"
+      - name: Replays give the reference sync logs
+        if: matrix.os != 'windows'
+        run: scripts/ci-replay-check.sh build-ci-${{ matrix.os }}/spacehog
+      - name: Replays give the reference sync logs (x86_64 slice, Rosetta)
+        if: matrix.os == 'macos'
+        run: scripts/ci-replay-check.sh build-ci-macos/spacehog arch -x86_64
       - uses: actions/upload-artifact@v4
         with:
-          name: spacehog-${{ matrix.os }}-x86_64
-          path: dist/spacehog-${{ matrix.os }}-x86_64.*
+          name: spacehog-${{ matrix.asset }}
+          path: dist/spacehog-${{ matrix.asset }}.*
           retention-days: 14

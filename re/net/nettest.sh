@@ -25,11 +25,11 @@ OUT=$ROOT/scratch/nettest/run-$SEED$PAD; rm -rf "$OUT"; mkdir -p "$OUT/hs" "$OUT
 BASE=$ROOT/scratch/nettest
 
 # pinned Warpzone server (release asset, checksum from its SHA256SUMS)
-SRV=$ROOT/tools/warpzone/warpzone-server-0.1.2-x86_64-linux-musl
+SRV=$ROOT/tools/warpzone/warpzone-server-0.1.10-x86_64-linux-musl
 if [ ! -x "$SRV" ]; then
    mkdir -p "$(dirname "$SRV")"
-   curl -fsSL -o "$SRV.$$" https://github.com/jarvis-jhk/warpzone/releases/download/v0.1.2/warpzone-server-0.1.2-x86_64-linux-musl
-   echo "4ead1de3c36f05d34c7c0561a6bd86d2bedb88aec4518685fb727d3a856f872c  $SRV.$$" | sha256sum -c - >/dev/null
+   curl -fsSL -o "$SRV.$$" https://github.com/jarvis-jhk/warpzone/releases/download/v0.1.10/warpzone-server-0.1.10-x86_64-linux-musl
+   echo "c9bd8111f726948ba738e5ad61f77e9f2b105add79be21a308085d691e222c08  $SRV.$$" | sha256sum -c - >/dev/null
    chmod +x "$SRV.$$"; mv "$SRV.$$" "$SRV"
 fi
 PORT=$((3100 + SEED % 400)) UPORT=$((3600 + SEED % 400))
