@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.1
 
 - **Online co-op on macOS** (and fault reports there): the macOS build now carries the
   Warpzone client, and the macOS Warpzone launcher can install and start it.

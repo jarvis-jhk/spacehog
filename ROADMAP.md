@@ -40,7 +40,7 @@ listed in `PLAN.md` and pinned by the differential tests.
    `spacehog-macos-universal.tar.gz` (arm64 + x86_64, macOS 11+), built on `macos-14` in
    CI, both slices replay `re/refemu/replays` to the Linux reference sync logs
    (`scripts/ci-replay-check.sh`), README section with the Gatekeeper workaround.
-   **Online co-op on macOS** (`spacehog-macos-online-co-op`): built in after 0.3.0 with
+   **Online co-op on macOS** (`spacehog-macos-online-co-op`): done in 0.3.1 with
    libwarpzone 0.1.11 (universal-apple-darwin package); the Warpzone descriptor knows the
    `macos` asset `spacehog-macos-universal.tar.gz` / `spacehog/spacehog`. Original plan:
    a macOS build, universal (arm64 +
